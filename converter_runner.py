@@ -1,6 +1,7 @@
 import sys
 import time
 from query_loader import ConverterQueryLoader
+from converter_reader import *
 from query_loader import Query
 
 if __name__ == "__main__":
@@ -8,11 +9,12 @@ if __name__ == "__main__":
     print str(query)
     cql = ConverterQueryLoader()
     result = cql.execute_query(str(query))
-    # print result.ways
-    for way in result.ways:
-        print("Name: %s" % way.tags.get("name", "n/a"))
-        print("  Highway: %s" % way.tags.get("highway", "n/a"))
-        print("  Nodes:")
-        for node in way.get_nodes(resolve_missing=True):
-            time.sleep(0.1)
-            print("    Lat: %f, Lon: %f" % (node.lat, node.lon))
+    converter_reader = ConverterReader()
+    converter_reader.read_to_internal_structure(result)
+
+    # for way in result.ways:
+    #     print("Name: %s" % way.tags.get("name", "n/a"))
+    #     print("  Highway: %s" % way.tags.get("highway", "n/a"))
+    #     print("  Nodes:")
+    #     for node in way.nodes:
+    #         print("    Lat: %f, Lon: %f" % (node.lat, node.lon))

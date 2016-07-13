@@ -1,3 +1,5 @@
+import math
+
 class Way:
     id = ''
     street_name = ''
@@ -5,6 +7,7 @@ class Way:
     ending_point = None
     lanes_number = ''
     priority = ''
+    oneway = False
 
     def __init__(self, id, street_name, starting_point, ending_point, lanes_number, priority):
         self.id = id
@@ -17,10 +20,9 @@ class Way:
     def calculate_length(self):
         """
 
-        :return: int
+        :return: float
         """
-        # Implementation TO DO
-        return 0
+        return math.sqrt((self.starting_point.x - self.ending_point.x) ** 2 + (self.starting_point.y - self.ending_point.y) ** 2)
 
     def print_to_file(self):
         """

@@ -1,11 +1,8 @@
-import overpy
-import time
 import math
 from model.junction import Junction
 from model.way import Way
 from model.gateway import Gateway
 from model.node import Node
-
 
 class ConverterReader:
     """"
@@ -14,22 +11,22 @@ class ConverterReader:
     query = None
     gateways = set()
     junctions = set()
+    ways = set()
 
     def __init__(self, query):
         self.query = query
 
     def read_to_internal_structure(self, result):
-        nodes = []
+        nodes_that_represent_junctions = []
         nodes_set = set()
         ways_to_nodes = dict()
 
         loop_number = len(result.ways)
         i = 0
+        # petla do wykrywania skrzyzowan
         for way in result.ways:
-            for node in way.get_nodes(resolve_missing=True):
-                time.sleep(
-                    0.5)  # overpy.exception.OverpassTooManyRequests, zeby to wyrzucic trzeba zaimplementowac wlasne "resolve_missing"(lapac ten wyjatek i powtarzac kwerende)
-                nodes.append(node)
+            for node in way.get_nodes(resolve_missing=False):
+                nodes_that_represent_junctions.append(node)
                 nodes_set.add(node)
                 if way in ways_to_nodes:
                     ways_to_nodes[way].add(node)
@@ -39,29 +36,34 @@ class ConverterReader:
             print i, "/", loop_number
 
         for node in nodes_set:
-            nodes.remove(node)
+            nodes_that_represent_junctions.remove(node)
 
-        nodes = set(nodes)
+        nodes_that_represent_junctions = set(nodes_that_represent_junctions)
+
+        # tworzenie obiektow Junction i Way
         for way in result.ways:
-            for node in ways_to_nodes[way]:
-                if node in nodes:
-                    x_start = int(round(self.measure(float(self.query.latitudeSouth), float(self.query.longitudeWest),
-                                           float(self.query.latitudeSouth), float(way.nodes[0].lon))))
-                    y_start = int(round(self.measure(float(self.query.latitudeSouth), float(self.query.longitudeWest),
-                                           float(way.nodes[0].lat), float(self.query.longitudeWest))))
-                    starting_point = Node(way.nodes[0].id, x_start, y_start)
+            x_start = int(round(self.measure(float(self.query.latitudeSouth), float(self.query.longitudeWest),
+                                             float(self.query.latitudeSouth), float(way.nodes[0].lon))))
+            y_start = int(round(self.measure(float(self.query.latitudeSouth), float(self.query.longitudeWest),
+                                         float(way.nodes[0].lat), float(self.query.longitudeWest))))
+            starting_point = Node(way.nodes[0].id, x_start, y_start)
 
-                    x_end = int(round(self.measure(float(self.query.latitudeSouth), float(self.query.longitudeWest),
-                                         float(self.query.latitudeSouth), float(way.nodes[-1].lon))))
-                    y_end = int(round(self.measure(float(self.query.latitudeSouth), float(self.query.longitudeWest),
-                                         float(way.nodes[-1].lat), float(self.query.longitudeWest))))
-                    ending_point = Node(way.nodes[-1].id, x_end, y_end)
-                    w = Way(way.id,
-                            way.tags.get("name", "n/a"),
-                            starting_point,
-                            ending_point,
-                            way.tags.get("lanes", "n/a"),
-                            way.tags.get("highway", "n/a"))
+            x_end = int(round(self.measure(float(self.query.latitudeSouth), float(self.query.longitudeWest),
+                                       float(self.query.latitudeSouth), float(way.nodes[-1].lon))))
+            y_end = int(round(self.measure(float(self.query.latitudeSouth), float(self.query.longitudeWest),
+                                       float(way.nodes[-1].lat), float(self.query.longitudeWest))))
+            ending_point = Node(way.nodes[-1].id, x_end, y_end)
+            w = Way(way.id,
+                    way.tags.get("name", "n/a"),
+                    starting_point,
+                    ending_point,
+                    way.tags.get("lanes", "n/a"),
+                    way.tags.get("highway", "n/a"))
+            if way.tags.get("oneway", "n/a") == "yes":
+                w.oneway = True
+            self.ways.add(w)
+            for node in ways_to_nodes[way]:
+                if node in nodes_that_represent_junctions:
                     if node.id in [x.id for x in self.junctions]:
                         for junction in self.junctions:
                             if junction.id == node.id:
@@ -76,14 +78,7 @@ class ConverterReader:
                         junction.arms[w] = None
                         self.junctions.add(junction)
 
-        # testowe wypisywanie
-        # print self.junctions
-        for junction in self.junctions:
-            print "ID:", junction.id, 'x:', junction.x, 'y:', junction.y,
-            for key in junction.arms.keys():
-                print key.street_name, " ",
-            print
-
+        # tworzenie obiektow Gateway
         for way in result.ways:
             n_first = way.nodes[0]
             n_last = way.nodes[-1]
@@ -103,6 +98,14 @@ class ConverterReader:
                 gateway = Gateway(n_last.id, x_gateway, y_gateway)
                 self.gateways.add(gateway)
                 print 'ID:', gateway.id, 'x:', gateway.x, 'y:', gateway.y
+
+        # testowe wypisywanie
+        # print self.junctions
+        for junction in self.junctions:
+            print "ID:", junction.id, 'x:', junction.x, 'y:', junction.y,
+            for key in junction.arms.keys():
+                print key.street_name, " ",
+            print
 
     def measure(self, lat1, lon1, lat2, lon2):  # generally used geo measurement function
         R = 6378.137

@@ -18,7 +18,20 @@ class Query:
         return "Query(%r,%r,%r,%r)" % (self.latitudeSouth, self.longitudeWest, self.latitudeNorth, self.longitudeEast)
 
     def __str__(self):
-        return "(way(" + self.latitudeSouth + "," + self.longitudeWest + "," + self.latitudeNorth + "," + self.longitudeEast + ')["highway"~"motorway|trunk|primary|secondary|tertiary"];node(w);relation(' + self.latitudeSouth + "," + self.longitudeWest + "," + self.latitudeNorth + "," + self.longitudeEast + ')["restriction"~"no_right_turn|no_left_turn|no_u_turn|no_straight_on|only_right_turn|only_left_turn|only_straight_on"];way(r););out;'
+        return '''<union>
+                      <query type="way">
+                        <bbox-query s="'''+self.latitudeSouth+'''" w="'''+self.longitudeWest+'''" n="'''+self.latitudeNorth+'''" e="'''+self.longitudeEast+'''"/>
+                        <has-kv k="highway" regv="motorway|trunk|primary|secondary|tertiary|unclassified|residential"/>
+                      </query>
+                      <recurse type="way-node"/>
+                      <query type="relation">
+                        <bbox-query s="'''+self.latitudeSouth+'''" w="'''+self.longitudeWest+'''" n="'''+self.latitudeNorth+'''" e="'''+self.longitudeEast+'''"/>
+                        <has-kv k="restriction" regv="no_right_turn|no_left_turn|no_u_turn|no_straight_on|only_right_turn|only_left_turn|only_straight_on"/>
+                      </query>
+                      <recurse type="relation-way"/>
+                      <recurse type="way-node"/>
+                  </union>
+                  <print />'''
 
 
 class ConverterQueryLoader:

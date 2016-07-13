@@ -7,6 +7,3 @@ class Node:
         self.id = id
         self.x = x
         self.y = y
-
-    def __init__(self, id):
-        self.id = id

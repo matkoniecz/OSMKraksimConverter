@@ -6,10 +6,10 @@ from query_loader import Query
 
 if __name__ == "__main__":
     query = Query(sys.argv[1], sys.argv[2], sys.argv[3], sys.argv[4])
-    print str(query)
     cql = ConverterQueryLoader()
     result = cql.execute_query(str(query))
-    converter_reader = ConverterReader()
+    print "Kwerenda wykonana"
+    converter_reader = ConverterReader(query)
     converter_reader.read_to_internal_structure(result)
 
     # for way in result.ways:

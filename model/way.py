@@ -1,8 +1,8 @@
 class Way:
     id = ''
     street_name = ''
-    starting_point = ''
-    ending_point = ''
+    starting_point = None
+    ending_point = None
     lanes_number = ''
     priority = ''
 

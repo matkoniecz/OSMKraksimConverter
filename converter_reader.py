@@ -3,6 +3,8 @@ from model.junction import Junction
 from model.way import Way
 from model.gateway import Gateway
 from model.node import Node
+from model.action import Action
+from model.rule import Rule
 
 class ConverterReader:
     """"
@@ -37,6 +39,8 @@ class ConverterReader:
 
         for node in nodes_set:
             nodes_that_represent_junctions.remove(node)
+            if node in nodes_that_represent_junctions:
+                nodes_that_represent_junctions.remove(node)
 
         nodes_that_represent_junctions = set(nodes_that_represent_junctions)
 
@@ -57,7 +61,7 @@ class ConverterReader:
                     way.tags.get("name", "n/a"),
                     starting_point,
                     ending_point,
-                    way.tags.get("lanes", "n/a"),
+                    way.tags.get("lanes", "1"),
                     way.tags.get("highway", "n/a"))
             if way.tags.get("oneway", "n/a") == "yes":
                 w.oneway = True
@@ -89,7 +93,7 @@ class ConverterReader:
                                    float(n_first.lat), float(self.query.longitudeWest))))
                 gateway = Gateway(n_first.id, x_gateway, y_gateway)
                 self.gateways.add(gateway)
-                print 'ID:', gateway.id, 'x:', gateway.x, 'y:', gateway.y
+                # print 'ID:', gateway.id, 'x:', gateway.x, 'y:', gateway.y
             if n_last.id not in [x.id for x in self.junctions]:
                 x_gateway = int(round(self.measure(float(self.query.latitudeSouth), float(self.query.longitudeWest),
                                          float(self.query.latitudeSouth), float(n_last.lon))))
@@ -97,14 +101,81 @@ class ConverterReader:
                                      float(n_last.lat), float(self.query.longitudeWest))))
                 gateway = Gateway(n_last.id, x_gateway, y_gateway)
                 self.gateways.add(gateway)
-                print 'ID:', gateway.id, 'x:', gateway.x, 'y:', gateway.y
+                # print 'ID:', gateway.id, 'x:', gateway.x, 'y:', gateway.y
+
+        # tworzenie bloku nr 3
+        ways_priorities = dict()
+        ways_priorities['residential'] = 0
+        ways_priorities['unclassified'] = 0
+        ways_priorities['tertiary'] = 1
+        ways_priorities['secondary_link'] = 2
+        ways_priorities['secondary'] = 2
+        ways_priorities['primary'] = 3
+        ways_priorities['trunk'] = 4
+        ways_priorities['motorway'] = 5
+        for junction in self.junctions:
+            for way in junction.arms.keys():
+                actions = []
+                for possible_exit_for_given_way in junction.arms.keys():
+                    for lane in range(int(possible_exit_for_given_way.lanes_number)):
+                        action = Action(lane, possible_exit_for_given_way, set())
+                        actions.append(action)
+                junction.arms[way] = set(actions)
+
+                for action in actions:
+                    for possible_exit_for_given_way in junction.arms.keys():
+                        if ways_priorities[possible_exit_for_given_way.priority] > ways_priorities[way.priority]:
+                            for lane in range(int(possible_exit_for_given_way.lanes_number)):
+                                rule = Rule(possible_exit_for_given_way, lane)
+                                action.rules.add(rule)
+                if way.oneway:
+                    self.delete_from_set_of_actions(way, way, junction)
+
+        for relation in result.relations:
+            flag_to = False
+            flag_via = False
+            for relation_member in relation.members:
+                if relation_member.role == "to":
+                    flag_to = True
+                    exit_id = relation_member.ref
+                if relation_member.role == 'via':
+                    flag_via = True
+                    junction_id = relation_member.ref
+                if relation_member.role == "from":
+                    way_from_id = relation_member.ref
+            if flag_to and flag_via:
+                restriction = relation.tags.get("restriction", "n/a")
+                junction = self.get_junction_by_id(junction_id)
+                way_from = self.get_way_by_id(way_from_id)
+                way_to = self.get_way_by_id(exit_id)
+                if junction is None:
+                    continue
+                if restriction == "no_left_turn" or way_from.oneway:
+                    self.delete_from_set_of_actions(way_from, way_from, junction)
+                if restriction[0:2] == "no":
+                    self.delete_from_set_of_actions(way_from, way_to, junction)
+                if restriction[0:4] == "only":
+                    ways_to_delete = [way for way in junction.arms.keys() if way.id != way_to.id]
+                    for way in ways_to_delete:
+                        self.delete_from_set_of_actions(way_from, way, junction)
 
         # testowe wypisywanie
         # print self.junctions
         for junction in self.junctions:
-            print "ID:", junction.id, 'x:', junction.x, 'y:', junction.y,
+            print "Junction ID:", junction.id, 'x:', junction.x, 'y:', junction.y
+            print '---- Streets'
             for key in junction.arms.keys():
-                print key.street_name, " ",
+                print "---- Street name:", key.street_name, 'Street ID:', key.id, 'Lanes number:', key.lanes_number, 'Priority:', key.priority
+                print '----**** Actions'
+                for action in junction.arms[key]:
+                    print "----**** Lane no.:", action.lane
+                    print "----**** Exit street name:", action.exit.street_name, 'Exit street ID:', action.exit.id
+                    print "----****######## Rules"
+                    for rule in action.rules:
+                        print "----****######## Entrance street name:", rule.entrance.street_name
+                        print "----****######## Lane no.:", rule.lane
+                print
+            print
             print
 
     def measure(self, lat1, lon1, lat2, lon2):  # generally used geo measurement function
@@ -116,6 +187,30 @@ class ConverterReader:
         c = 2 * math.atan2(math.sqrt(a), math.sqrt(1 - a))
         d = R * c
         return d * 1000 / 7.5
+
+    def get_junction_by_id(self, junction_id):
+        for junction in self.junctions:
+            if junction.id == junction_id:
+                return junction
+
+    def get_way_by_id(self, way_from_id):
+        for way in self.ways:
+            if way.id == way_from_id:
+                return way
+
+    def delete_from_set_of_actions(self, way_from, exit, junction):
+        """
+
+        :param way: way.Way
+        :param junction: junction.Junction
+        :return:
+        """
+        actions_to_delete = [action for action in junction.arms[way_from] if action.exit.id == exit.id]
+        for action in actions_to_delete:
+            junction.arms[way_from].remove(action)
+
+
+
 
 
 

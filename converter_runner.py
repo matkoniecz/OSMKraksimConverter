@@ -1,5 +1,5 @@
 import sys
-import time
+from converter_printer import ConverterPrinter
 from query_loader import ConverterQueryLoader
 from converter_reader import *
 from query_loader import Query
@@ -11,6 +11,8 @@ if __name__ == "__main__":
     print "Kwerenda wykonana"
     converter_reader = ConverterReader(query)
     converter_reader.read_to_internal_structure(result)
+    ConverterPrinter.print_to_file(sys.argv[5], converter_reader.gateways, converter_reader.junctions,
+                                   converter_reader.ways)
 
     # for way in result.ways:
     #     print("Name: %s" % way.tags.get("name", "n/a"))

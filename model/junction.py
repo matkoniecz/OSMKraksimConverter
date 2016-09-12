@@ -2,6 +2,7 @@ from model.node import Node
 
 
 class Junction(Node):
+    # arms: Way -> set<Action>
     arms = None
 
     def __init__(self, arms, id, x, y):

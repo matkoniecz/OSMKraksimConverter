@@ -111,6 +111,7 @@ class ConverterReader:
         ways_priorities['secondary_link'] = 2
         ways_priorities['secondary'] = 2
         ways_priorities['primary'] = 3
+        ways_priorities['primary_link'] = 3
         ways_priorities['trunk'] = 4
         ways_priorities['motorway'] = 5
         for junction in self.junctions:
@@ -134,6 +135,7 @@ class ConverterReader:
         for relation in result.relations:
             flag_to = False
             flag_via = False
+            flag_from = False
             for relation_member in relation.members:
                 if relation_member.role == "to":
                     flag_to = True
@@ -142,8 +144,9 @@ class ConverterReader:
                     flag_via = True
                     junction_id = relation_member.ref
                 if relation_member.role == "from":
+                    flag_from = True
                     way_from_id = relation_member.ref
-            if flag_to and flag_via:
+            if flag_to and flag_via and flag_from:
                 restriction = relation.tags.get("restriction", "n/a")
                 junction = self.get_junction_by_id(junction_id)
                 way_from = self.get_way_by_id(way_from_id)

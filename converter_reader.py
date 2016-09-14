@@ -86,7 +86,7 @@ class ConverterReader:
         for way in result.ways:
             n_first = way.nodes[0]
             n_last = way.nodes[-1]
-            if n_first.id not in [x.id for x in self.junctions]:
+            if n_first.id not in [x.id for x in self.junctions] and n_first.id not in [gateway.id for gateway in self.gateways]:
                 x_gateway = int(round(self.measure(float(self.query.latitudeSouth), float(self.query.longitudeWest),
                                        float(self.query.latitudeSouth), float(n_first.lon))))
                 y_gateway = int(round(self.measure(float(self.query.latitudeSouth), float(self.query.longitudeWest),
@@ -94,13 +94,20 @@ class ConverterReader:
                 gateway = Gateway(n_first.id, x_gateway, y_gateway)
                 self.gateways.add(gateway)
                 # print 'ID:', gateway.id, 'x:', gateway.x, 'y:', gateway.y
-            if n_last.id not in [x.id for x in self.junctions]:
+                # if gateway.id == 1448935649:
+                #     print "---- Street name:", way.tags.get("name", "n/a"), 'Street ID:', way.id, 'Lanes number:', way.tags.get("lanes", "1"),\
+                #         'Priority:', way.tags.get("highway", "n/a")
+
+            if n_last.id not in [x.id for x in self.junctions] and n_last.id not in [gateway.id for gateway in self.gateways]:
                 x_gateway = int(round(self.measure(float(self.query.latitudeSouth), float(self.query.longitudeWest),
                                          float(self.query.latitudeSouth), float(n_last.lon))))
                 y_gateway = int(round(self.measure(float(self.query.latitudeSouth), float(self.query.longitudeWest),
                                      float(n_last.lat), float(self.query.longitudeWest))))
                 gateway = Gateway(n_last.id, x_gateway, y_gateway)
                 self.gateways.add(gateway)
+                # if gateway.id == 1448935649:
+                #     print "---- Street name:", way.tags.get("name","n/a"), 'Street ID:', way.id, 'Lanes number:', \
+                #         way.tags.get("lanes", "1"), 'Priority:', way.tags.get("highway", "n/a")
                 # print 'ID:', gateway.id, 'x:', gateway.x, 'y:', gateway.y
 
         # tworzenie bloku nr 3
@@ -164,22 +171,22 @@ class ConverterReader:
 
         # testowe wypisywanie
         # print self.junctions
-        for junction in self.junctions:
-            print "Junction ID:", junction.id, 'x:', junction.x, 'y:', junction.y
-            print '---- Streets'
-            for key in junction.arms.keys():
-                print "---- Street name:", key.street_name, 'Street ID:', key.id, 'Lanes number:', key.lanes_number, 'Priority:', key.priority
-                print '----**** Actions'
-                for action in junction.arms[key]:
-                    print "----**** Lane no.:", action.lane
-                    print "----**** Exit street name:", action.exit.street_name, 'Exit street ID:', action.exit.id
-                    print "----****######## Rules"
-                    for rule in action.rules:
-                        print "----****######## Entrance street name:", rule.entrance.street_name
-                        print "----****######## Lane no.:", rule.lane
-                print
-            print
-            print
+        # for junction in self.junctions:
+        #     print "Junction ID:", junction.id, 'x:', junction.x, 'y:', junction.y
+        #     print '---- Streets'
+        #     for key in junction.arms.keys():
+        #         print "---- Street name:", key.street_name, 'Street ID:', key.id, 'Lanes number:', key.lanes_number, 'Priority:', key.priority
+        #         print '----**** Actions'
+        #         for action in junction.arms[key]:
+        #             print "----**** Lane no.:", action.lane
+        #             print "----**** Exit street name:", action.exit.street_name, 'Exit street ID:', action.exit.id
+        #             print "----****######## Rules"
+        #             for rule in action.rules:
+        #                 print "----****######## Entrance street name:", rule.entrance.street_name
+        #                 print "----****######## Lane no.:", rule.lane
+        #         print
+        #     print
+        #     print
 
     def measure(self, lat1, lon1, lat2, lon2):  # generally used geo measurement function
         R = 6378.137

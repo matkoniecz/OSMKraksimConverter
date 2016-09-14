@@ -40,13 +40,27 @@ def correct_xml_file(file_path):
     f.close()
 
 
+def generate_traffic(file_path, gateways):
+    traffic_net = ET.Element("traffic")
+    for gateway_1 in gateways:
+        for gateway_2 in gateways:
+            if not gateway_1.id == gateway_2.id:
+                scheme_branch = ET.SubElement(traffic_net, "scheme", count="100")
+                gateway_1_branch = ET.SubElement(scheme_branch, "gateway", id=str(gateway_1.id))
+                ET.SubElement(gateway_1_branch, "uniform", a="0", b="8000")
+                ET.SubElement(scheme_branch, "gateway", id=str(gateway_2.id))
+
+                tree = ET.ElementTree(traffic_net)
+                tree.write(file_path + "_generator.xml", pretty_print=True)
+
+
 class ConverterPrinter:
     def __init__(self):
         pass
 
     @staticmethod
     def print_to_file(file_path, gateways, junctions, roads):
-        road_net = ET.Element("roadnet")
+        road_net = ET.Element("RoadNet")
 
         # ------------------------ Blok nr 1 ----------------------------------
         nodes_branch = ET.SubElement(road_net, "nodes")
@@ -72,18 +86,20 @@ class ConverterPrinter:
         for junction in junctions:
             intersection_branch = ET.SubElement(intersection_descriptions_branch, "intersection", id=str(junction.id))
             for arm in junction.arms.keys():
-                arm_actions_branch = ET.SubElement(intersection_branch, "armActions", arm=str(arm.id), dir="NS")
+                arm_actions_branch = ET.SubElement(intersection_branch, "armActions", arm=str(arm.ending_point.id), dir="NS")
                 for action in junction.arms[arm]:
                     action_branch = ET.SubElement(arm_actions_branch, "action", lane=str(action.lane),
-                                                  exit=str(action.exit.id))
+                                                  exit=str(action.exit.ending_point.id))
                     for rule in action.rules:
-                        rule_branch = ET.SubElement(action_branch, "rule", entrance=str(rule.entrance.id), lane=str(rule.lane))
+                        rule_branch = ET.SubElement(action_branch, "rule", entrance=str(rule.entrance.ending_point.id), lane=str(rule.lane))
 
 
         tree = ET.ElementTree(road_net)
         tree.write(file_path + ".xml", pretty_print=True)
 
         correct_xml_file(file_path)
+
+        generate_traffic(file_path, gateways)
 
         pass
 

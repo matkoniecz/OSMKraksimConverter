@@ -22,7 +22,8 @@ class Way:
 
         :return: float
         """
-        return math.sqrt((self.starting_point.x - self.ending_point.x) ** 2 + (self.starting_point.y - self.ending_point.y) ** 2)
+        return int(math.ceil(math.sqrt((self.starting_point.x - self.ending_point.x) ** 2
+                                   + (self.starting_point.y - self.ending_point.y) ** 2)))
 
     def print_to_file(self):
         """

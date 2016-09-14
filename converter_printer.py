@@ -86,12 +86,12 @@ class ConverterPrinter:
         for junction in junctions:
             intersection_branch = ET.SubElement(intersection_descriptions_branch, "intersection", id=str(junction.id))
             for arm in junction.arms.keys():
-                arm_actions_branch = ET.SubElement(intersection_branch, "armActions", arm=str(arm.ending_point.id), dir="NS")
+                arm_actions_branch = ET.SubElement(intersection_branch, "armActions", arm=str(arm.starting_point.id), dir="NS")
                 for action in junction.arms[arm]:
                     action_branch = ET.SubElement(arm_actions_branch, "action", lane=str(action.lane),
                                                   exit=str(action.exit.ending_point.id))
                     for rule in action.rules:
-                        rule_branch = ET.SubElement(action_branch, "rule", entrance=str(rule.entrance.ending_point.id), lane=str(rule.lane))
+                        rule_branch = ET.SubElement(action_branch, "rule", entrance=str(rule.entrance.starting_point.id), lane=str(rule.lane))
 
 
         tree = ET.ElementTree(road_net)

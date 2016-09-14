@@ -30,6 +30,7 @@ def unescape(text):
 
     return re.sub("&#?\w+;", fixup, text)
 
+
 def correct_xml_file(file_path):
     f = codecs.open(file_path + ".xml", "r+", "utf-8")
     text = unescape(f.read())
@@ -65,6 +66,19 @@ class ConverterPrinter:
             if not road.oneway:
                 downlink_branch = ET.SubElement(road_branch, "downlink")
                 ET.SubElement(downlink_branch, "main", length=str(road.calculate_length()), numberOfLanes=str(road.lanes_number))
+
+        # ------------------------ Blok nr 3 ----------------------------------
+        intersection_descriptions_branch = ET.SubElement(road_net, "intersectionDescriptions")
+        for junction in junctions:
+            intersection_branch = ET.SubElement(intersection_descriptions_branch, "intersection", id=str(junction.id))
+            for arm in junction.arms.keys():
+                arm_actions_branch = ET.SubElement(intersection_branch, "armActions", arm=str(arm.id), dir="NS")
+                for action in junction.arms[arm]:
+                    action_branch = ET.SubElement(arm_actions_branch, "action", lane=str(action.lane),
+                                                  exit=str(action.exit.id))
+                    for rule in action.rules:
+                        rule_branch = ET.SubElement(action_branch, "rule", entrance=str(rule.entrance.id), lane=str(rule.lane))
+
 
         tree = ET.ElementTree(road_net)
         tree.write(file_path + ".xml", pretty_print=True)

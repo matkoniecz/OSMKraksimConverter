@@ -86,12 +86,22 @@ class ConverterPrinter:
         for junction in junctions:
             intersection_branch = ET.SubElement(intersection_descriptions_branch, "intersection", id=str(junction.id))
             for arm in junction.arms.keys():
-                arm_actions_branch = ET.SubElement(intersection_branch, "armActions", arm=str(arm.starting_point.id), dir="NS")
+                different_than_current_intersection_arm_point = str(arm.starting_point.id) \
+                    if str(arm.starting_point.id) != str(junction.id) else str(arm.ending_point.id)
+                arm_actions_branch = ET.SubElement(intersection_branch, "armActions", arm=different_than_current_intersection_arm_point,
+                                                   dir="NS")
                 for action in junction.arms[arm]:
+                    different_than_current_intersection_exit_point = str(
+                        action.exit.starting_point.id) if str(action.exit.starting_point.id) != str(junction.id)\
+                        else str(action.exit.ending_point.id)
+
                     action_branch = ET.SubElement(arm_actions_branch, "action", lane=str(action.lane),
-                                                  exit=str(action.exit.ending_point.id))
+                                                  exit=different_than_current_intersection_exit_point)
                     for rule in action.rules:
-                        rule_branch = ET.SubElement(action_branch, "rule", entrance=str(rule.entrance.starting_point.id), lane=str(rule.lane))
+                        different_than_current_intersection_entrance_point = str(
+                            rule.entrance.starting_point.id) if str(rule.entrance.starting_point.id) != str(junction.id)\
+                            else str(rule.entrance.ending_point.id)
+                        rule_branch = ET.SubElement(action_branch, "rule", entrance=different_than_current_intersection_entrance_point, lane=str(rule.lane))
 
 
         tree = ET.ElementTree(road_net)

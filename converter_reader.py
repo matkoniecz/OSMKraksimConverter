@@ -123,8 +123,12 @@ class ConverterReader:
         ways_priorities['motorway'] = 5
         for junction in self.junctions:
             for way in junction.arms.keys():
+                if way.oneway and str(way.starting_point.id) == str(junction.id):
+                    continue
                 actions = []
                 for possible_exit_for_given_way in junction.arms.keys():
+                    if possible_exit_for_given_way.oneway and str(possible_exit_for_given_way.starting_point.id) != str(junction.id):
+                            continue
                     action = Action(0, possible_exit_for_given_way, set())
                     actions.append(action)
                 junction.arms[way] = set(actions)
@@ -168,23 +172,23 @@ class ConverterReader:
                         self.delete_from_set_of_actions(way_from, way, junction)
 
         # testowe wypisywanie
-        print self.junctions
-        for junction in self.junctions:
-            print "Junction ID:", junction.id, 'x:', junction.x, 'y:', junction.y
-            print '---- Streets'
-            for key in junction.arms.keys():
-                print "---- Street name:", key.street_name, 'Street ID:', key.id, 'Lanes number:', key.lanes_number, 'Priority:', key.priority
-                print '----**** Actions'
-                for action in junction.arms[key]:
-                    print "----**** Lane no.:", action.lane
-                    print "----**** Exit street name:", action.exit.street_name, 'Exit street ID:', action.exit.id
-                    print "----****######## Rules"
-                    for rule in action.rules:
-                        print "----****######## Entrance street name:", rule.entrance.street_name
-                        print "----****######## Lane no.:", rule.lane
-                print
-            print
-            print
+        # print self.junctions
+        # for junction in self.junctions:
+        #     print "Junction ID:", junction.id, 'x:', junction.x, 'y:', junction.y
+        #     print '---- Streets'
+        #     for key in junction.arms.keys():
+        #         print "---- Street name:", key.street_name, 'Street ID:', key.id, 'Lanes number:', key.lanes_number, 'Priority:', key.priority
+        #         print '----**** Actions'
+        #         for action in junction.arms[key]:
+        #             print "----**** Lane no.:", action.lane
+        #             print "----**** Exit street name:", action.exit.street_name, 'Exit street ID:', action.exit.id
+        #             print "----****######## Rules"
+        #             for rule in action.rules:
+        #                 print "----****######## Entrance street name:", rule.entrance.street_name
+        #                 print "----****######## Lane no.:", rule.lane
+        #         print
+        #     print
+        #     print
 
     def measure(self, lat1, lon1, lat2, lon2):  # generally used geo measurement function
         R = 6378.137

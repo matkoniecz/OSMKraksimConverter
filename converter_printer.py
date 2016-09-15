@@ -86,6 +86,8 @@ class ConverterPrinter:
         for junction in junctions:
             intersection_branch = ET.SubElement(intersection_descriptions_branch, "intersection", id=str(junction.id))
             for arm in junction.arms.keys():
+                if junction.arms[arm] is None:
+                    continue
                 different_than_current_intersection_arm_point = str(arm.starting_point.id) \
                     if str(arm.starting_point.id) != str(junction.id) else str(arm.ending_point.id)
                 arm_actions_branch = ET.SubElement(intersection_branch, "armActions", arm=different_than_current_intersection_arm_point,

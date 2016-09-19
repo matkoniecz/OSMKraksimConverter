@@ -1,3 +1,4 @@
+# coding=utf-8
 import math
 from model.junction import Junction
 from model.way import Way
@@ -93,10 +94,6 @@ class ConverterReader:
                                    float(n_first.lat), float(self.query.longitudeWest))))
                 gateway = Gateway(n_first.id, x_gateway, y_gateway)
                 self.gateways.add(gateway)
-                # print 'ID:', gateway.id, 'x:', gateway.x, 'y:', gateway.y
-                # if gateway.id == 1448935649:
-                #     print "---- Street name:", way.tags.get("name", "n/a"), 'Street ID:', way.id, 'Lanes number:', way.tags.get("lanes", "1"),\
-                #         'Priority:', way.tags.get("highway", "n/a")
 
             if n_last.id not in [x.id for x in self.junctions] and n_last.id not in [gateway.id for gateway in self.gateways]:
                 x_gateway = int(round(self.measure(float(self.query.latitudeSouth), float(self.query.longitudeWest),
@@ -105,10 +102,6 @@ class ConverterReader:
                                      float(n_last.lat), float(self.query.longitudeWest))))
                 gateway = Gateway(n_last.id, x_gateway, y_gateway)
                 self.gateways.add(gateway)
-                # if gateway.id == 1448935649:
-                #     print "---- Street name:", way.tags.get("name","n/a"), 'Street ID:', way.id, 'Lanes number:', \
-                #         way.tags.get("lanes", "1"), 'Priority:', way.tags.get("highway", "n/a")
-                # print 'ID:', gateway.id, 'x:', gateway.x, 'y:', gateway.y
 
         # tworzenie bloku nr 3
         ways_priorities = dict()
@@ -133,11 +126,11 @@ class ConverterReader:
                     actions.append(action)
                 junction.arms[way] = set(actions)
 
-                for action in actions:
-                    for possible_exit_for_given_way in junction.arms.keys():
-                        if ways_priorities[possible_exit_for_given_way.priority] > ways_priorities[way.priority]:
-                            rule = Rule(possible_exit_for_given_way, 0)
-                            action.rules.add(rule)
+                # for action in actions:
+                #     for possible_exit_for_given_way in junction.arms.keys():
+                #         if ways_priorities[possible_exit_for_given_way.priority] > ways_priorities[way.priority]:
+                #             rule = Rule(possible_exit_for_given_way, 0)
+                #             action.rules.add(rule)
                 if way.oneway:
                     self.delete_from_set_of_actions(way, way, junction)
 
@@ -170,6 +163,22 @@ class ConverterReader:
                     ways_to_delete = [way for way in junction.arms.keys() if way.id != way_to.id]
                     for way in ways_to_delete:
                         self.delete_from_set_of_actions(way_from, way, junction)
+
+        for junction in self.junctions:
+            for exit in junction.arms.keys():
+                ways_with_given_exit = []
+                for possible_arm_for_given_exit in junction.arms.keys():
+                    action_with_given_exit = self.possible_arm_has_given_exit(junction, possible_arm_for_given_exit, exit)
+                    if action_with_given_exit is not None:
+                        ways_with_given_exit.append((possible_arm_for_given_exit, action_with_given_exit))
+                self.sort_ways_by_priority(ways_with_given_exit, ways_priorities)
+                for i in range(len(ways_with_given_exit))[1:]:
+                    j = 0
+                    action = ways_with_given_exit[i][1]
+                    while j < i:
+                        rule = Rule(ways_with_given_exit[j][0], 0)
+                        action.rules.add(rule)
+                        j += 1
 
         # testowe wypisywanie
         # print self.junctions
@@ -220,6 +229,24 @@ class ConverterReader:
         actions_to_delete = [action for action in junction.arms[way_from] if action.exit.id == exit.id]
         for action in actions_to_delete:
             junction.arms[way_from].remove(action)
+
+    def possible_arm_has_given_exit(self, junction, possible_arm_for_given_exit, exit):
+        if junction.arms[possible_arm_for_given_exit] is not None:
+            for action in junction.arms[possible_arm_for_given_exit]:
+                if str(action.exit.id) == str(exit.id):
+                    return action
+        return None
+
+    def sort_ways_by_priority(self, ways_with_given_exit, ways_priorities):
+        for i in range(len(ways_with_given_exit))[1:]:
+            tmp = ways_with_given_exit[i]
+            j = i - 1
+            while j>=0 and ways_priorities[ways_with_given_exit[j][0].priority] < ways_priorities[tmp[0].priority]:
+                ways_with_given_exit[j+1] = ways_with_given_exit[j]
+                j -= 1
+
+            ways_with_given_exit[j + 1] = tmp
+
 
 
 

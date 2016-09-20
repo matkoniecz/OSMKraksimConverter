@@ -28,20 +28,21 @@ class ConverterReader:
         i = 0
         # petla do wykrywania skrzyzowan
         for way in result.ways:
-            for node in way.get_nodes(resolve_missing=False):
+            all_nodes_of_way = way.get_nodes(resolve_missing=False)
+            for node in all_nodes_of_way[0], all_nodes_of_way[-1]:
                 nodes_that_represent_junctions.append(node)
                 nodes_set.add(node)
                 if way in ways_to_nodes:
-                    ways_to_nodes[way].add(node)
+                    ways_to_nodes[way].append(node)
                 else:
-                    ways_to_nodes[way] = {node}
+                    ways_to_nodes[way] = [node]
             i += 1
             print i, "/", loop_number
 
         for node in nodes_set:
             nodes_that_represent_junctions.remove(node)
-            if node in nodes_that_represent_junctions:
-                nodes_that_represent_junctions.remove(node)
+            # if node in nodes_that_represent_junctions:
+            #     nodes_that_represent_junctions.remove(node)
 
         nodes_that_represent_junctions = set(nodes_that_represent_junctions)
 
@@ -67,7 +68,7 @@ class ConverterReader:
             if way.tags.get("oneway", "n/a") == "yes":
                 w.oneway = True
             self.ways.add(w)
-            for node in ways_to_nodes[way]:
+            for node in ways_to_nodes[way][0], ways_to_nodes[way][-1]:
                 if node in nodes_that_represent_junctions:
                     if node.id in [x.id for x in self.junctions]:
                         for junction in self.junctions:
@@ -103,6 +104,11 @@ class ConverterReader:
                 gateway = Gateway(n_last.id, x_gateway, y_gateway)
                 self.gateways.add(gateway)
 
+        gateway_ids = [gateway.id for gateway in self.gateways]
+        for way in self.ways:
+            if way.starting_point.id in gateway_ids or way.ending_point.id in gateway_ids:
+                way.oneway = False
+
         # tworzenie bloku nr 3
         ways_priorities = dict()
         ways_priorities['residential'] = 0
@@ -120,7 +126,8 @@ class ConverterReader:
                     continue
                 actions = []
                 for possible_exit_for_given_way in junction.arms.keys():
-                    if possible_exit_for_given_way.oneway and str(possible_exit_for_given_way.starting_point.id) != str(junction.id):
+                    if (possible_exit_for_given_way.oneway and str(possible_exit_for_given_way.starting_point.id) != str(junction.id))\
+                            or str(possible_exit_for_given_way.id) == str(way.id):
                             continue
                     action = Action(0, possible_exit_for_given_way, set())
                     actions.append(action)
@@ -207,7 +214,7 @@ class ConverterReader:
             lat2 * math.pi / 180) * math.sin(dLon / 2) * math.sin(dLon / 2)
         c = 2 * math.atan2(math.sqrt(a), math.sqrt(1 - a))
         d = R * c
-        return d * 1000 / 7.5
+        return 20*(d * 1000 / 7.5)
 
     def get_junction_by_id(self, junction_id):
         for junction in self.junctions:

@@ -28,8 +28,6 @@ class Query:
                         <bbox-query s="'''+self.latitudeSouth+'''" w="'''+self.longitudeWest+'''" n="'''+self.latitudeNorth+'''" e="'''+self.longitudeEast+'''"/>
                         <has-kv k="restriction" regv="no_right_turn|no_left_turn|no_u_turn|no_straight_on|only_right_turn|only_left_turn|only_straight_on"/>
                       </query>
-                      <recurse type="relation-way"/>
-                      <recurse type="way-node"/>
                   </union>
                   <print />'''
 

@@ -24,7 +24,7 @@ def measure(lat1, lon1, lat2, lon2):  # generally used geo measurement function
         lat2 * math.pi / 180) * math.sin(dLon / 2) * math.sin(dLon / 2)
     c = 2 * math.atan2(math.sqrt(a), math.sqrt(1 - a))
     d = R * c
-    return 5*(d * 1000 / 7.5)
+    return 7.5*(d * 1000 / 7.5)
 
 
 def sort_ways_by_priority(ways_with_given_exit, ways_priorities):

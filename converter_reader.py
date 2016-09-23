@@ -24,7 +24,7 @@ def measure(lat1, lon1, lat2, lon2):  # generally used geo measurement function
         lat2 * math.pi / 180) * math.sin(dLon / 2) * math.sin(dLon / 2)
     c = 2 * math.atan2(math.sqrt(a), math.sqrt(1 - a))
     d = R * c
-    return 15*(d * 1000 / 7.5)
+    return 5*(d * 1000 / 7.5)
 
 
 def sort_ways_by_priority(ways_with_given_exit, ways_priorities):
@@ -46,6 +46,8 @@ def delete_from_set_of_actions(way_from, exit, junction):
     :param junction: junction.Junction
     :return:
     """
+    if junction.arms[way_from] is None:
+        return
     actions_to_delete = [action for action in junction.arms[way_from] if action.exit.id == exit.id]
     for action in actions_to_delete:
         junction.arms[way_from].remove(action)
@@ -56,6 +58,7 @@ def fill_dictionary():
     ways_priorities['residential'] = 0
     ways_priorities['unclassified'] = 0
     ways_priorities['tertiary'] = 1
+    ways_priorities['tertiary_link'] = 1
     ways_priorities['secondary_link'] = 2
     ways_priorities['secondary'] = 2
     ways_priorities['primary'] = 3
@@ -84,14 +87,22 @@ class ConverterReader:
         # wykrywanie skrzyzowan
         nodes_that_represent_junctions = self.find_junctions(result.ways)
 
+        print 'koniec wykrywanie skrzyzowan'
+
         # tworzenie obiektow Way i Junction
         self.create_ways_and_junctions(result.ways, nodes_that_represent_junctions)
+
+        print 'koniec tworzenie obiektow Way i Junction'
 
         # tworzenie obiektow Gateway
         self.create_gateways(result.ways)
 
+        print 'koniec tworzenie obiektow Gateway'
+
         # zapewnienie dwukierunkowosci drog z lub do gateway'ow
         self.provide_bidirectional_ways_to_gateways()
+
+        print 'koniec zapewnienie dwukierunkowosci drog z lub do gatewayow'
 
         # uzupelnienie slownika z priorytetami drog
         ways_priorities = fill_dictionary()
@@ -99,11 +110,17 @@ class ConverterReader:
         # tworzenie struktury obiektowej dla bloku nr 3 pliku wejściowego
         self.create_actions()         # stworzenie akcji
 
+        print 'koniec stworzenie akcji'
+
         # usuwanie niepotrzebnych akcji na bazie restrykcji wczytanych z relacji
         self.delete_some_actions(result.relations)
 
+        print 'koniec usuwanie niepotrzebnych akcji na bazie restrykcji wczytanych z relacji'
+
         # tworzenie obiektow Rule
         self.create_rules(ways_priorities)
+
+        print 'koniec tworzenie obiektow Rule'
 
         # wypisanie stworzonej struktury obiektowej
         # self.print_object_internal_structure()
@@ -140,6 +157,8 @@ class ConverterReader:
 
     def create_ways_and_junctions(self, query_ways, nodes_that_represent_junctions):
         for way in query_ways:
+            if str(way.nodes[0].id) == str(way.nodes[-1].id):
+                continue
             x_start = int(round(measure(float(self.query.latitudeNorth), float(self.query.longitudeWest),
                                         float(self.query.latitudeNorth), float(way.nodes[0].lon))))
             y_start = int(round(measure(float(self.query.latitudeNorth), float(self.query.longitudeWest),
@@ -159,6 +178,8 @@ class ConverterReader:
                     way.tags.get("highway", "n/a"))
             if way.tags.get("oneway", "n/a") == "yes":
                 w.oneway = True
+            if w.calculate_length() < 8:
+                continue
             self.ways.add(w)
             for node in self.ways_to_nodes[way][0], self.ways_to_nodes[way][-1]:
                 if node in nodes_that_represent_junctions:
@@ -177,25 +198,19 @@ class ConverterReader:
                         self.junctions.add(junction)
 
     def create_gateways(self, query_ways):
-        for way in query_ways:
-            n_first = way.nodes[0]
-            n_last = way.nodes[-1]
+        for way in self.ways:
+            n_first = way.starting_point
+            n_last = way.ending_point
+            if str(n_first.id) == str(n_last.id):
+                continue
             if n_first.id not in [x.id for x in self.junctions] and n_first.id not in [gateway.id for gateway in
                                                                                        self.gateways]:
-                x_gateway = int(round(measure(float(self.query.latitudeNorth), float(self.query.longitudeWest),
-                                              float(self.query.latitudeNorth), float(n_first.lon))))
-                y_gateway = int(round(measure(float(self.query.latitudeNorth), float(self.query.longitudeWest),
-                                              float(n_first.lat), float(self.query.longitudeWest))))
-                gateway = Gateway(n_first.id, x_gateway, y_gateway)
+                gateway = Gateway(n_first.id, n_first.x, n_first.y)
                 self.gateways.add(gateway)
 
             if n_last.id not in [x.id for x in self.junctions] and n_last.id not in [gateway.id for gateway in
                                                                                      self.gateways]:
-                x_gateway = int(round(measure(float(self.query.latitudeNorth), float(self.query.longitudeWest),
-                                              float(self.query.latitudeNorth), float(n_last.lon))))
-                y_gateway = int(round(measure(float(self.query.latitudeNorth), float(self.query.longitudeWest),
-                                              float(n_last.lat), float(self.query.longitudeWest))))
-                gateway = Gateway(n_last.id, x_gateway, y_gateway)
+                gateway = Gateway(n_last.id, n_last.x, n_last.y)
                 self.gateways.add(gateway)
 
     def provide_bidirectional_ways_to_gateways(self):

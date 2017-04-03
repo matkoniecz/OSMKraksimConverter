@@ -21,7 +21,7 @@ class Query:
         return '''<union>
                       <query type="way">
                         <bbox-query s="'''+self.latitudeSouth+'''" w="'''+self.longitudeWest+'''" n="'''+self.latitudeNorth+'''" e="'''+self.longitudeEast+'''"/>
-                        <has-kv k="highway" regv="motorway|trunk|primary|secondary|tertiary|unclassified|residential"/>
+                        <has-kv k="highway" regv="motorway|motorway_link|trunk|trunk_link|primary|primary_link|secondary|secondary_link|tertiary|tertiary_link|unclassified|residential"/>
                       </query>
                       <recurse type="way-node"/>
                       <query type="relation">

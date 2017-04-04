@@ -2,6 +2,7 @@ import sys
 from converter_printer import ConverterPrinter
 from query_loader import ConverterQueryLoader
 from converter_reader import *
+from converter_normalizer import ConverterNormalizer
 from query_loader import Query
 
 if __name__ == "__main__":
@@ -10,6 +11,7 @@ if __name__ == "__main__":
     result = cql.execute_query(str(query))
     print "Kwerenda wykonana"
     converter_reader = ConverterReader(query)
+    result = ConverterNormalizer.simplify_loaded_data(result)
     converter_reader.read_to_internal_structure(result)
     ConverterPrinter.print_to_file(sys.argv[5], converter_reader.gateways, converter_reader.junctions,
                                    converter_reader.ways)

@@ -81,7 +81,7 @@ class ConverterNormalizer(object):
                         if way_a[-1] != way_b[0]:
                             way_b = way_b[::-1]
 
-                        assert(way_a[-1] == way_b[0])
+                        assert(way_a[-1] == way_b[0]) # way_a must end at the same node as way_b starts
                         # remove from the second way node that appears in both
                         way_b = way_b[1:]
 

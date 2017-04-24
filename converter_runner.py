@@ -6,7 +6,8 @@ from converter_normalizer import ConverterNormalizer
 from query_loader import Query
 
 if __name__ == "__main__":
-    query = Query(sys.argv[1], sys.argv[2], sys.argv[3], sys.argv[4])
+    latitudeSouth, longitudeWest, latitudeNorth, longitudeEast = sys.argv[1], sys.argv[2], sys.argv[3], sys.argv[4]
+    query = Query(latitudeSouth, longitudeWest, latitudeNorth, longitudeEast)
     cql = ConverterQueryLoader()
     result = cql.execute_query(str(query))
     print "Kwerenda wykonana"

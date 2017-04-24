@@ -59,6 +59,8 @@ class ConverterNormalizer(object):
         # step 1
         for node in result.nodes:
             if len(attached_ways[node.id]) == 2:
+                if attached_ways[node.id][0] == attached_ways[node.id][1]:
+                    continue
                 way_a = ways[attached_ways[node.id][0]]
                 way_b = ways[attached_ways[node.id][1]]
                 if way_a[0] == node.id or way_a[-1] == node.id:

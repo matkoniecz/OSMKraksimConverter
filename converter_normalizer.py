@@ -78,7 +78,14 @@ class ConverterNormalizer(object):
                         # especially oneway
 
                         del ways[attached_ways[node.id][1]]  # deletes way_b
-                        if way_a[-1] != way_b[0]:
+
+                        # reverse ways so that
+                        # - way_a ends on the common node
+                        # - way_b starts on the common node
+                        if way_a[-1] != node.id:
+                            way_a = way_a[::-1]
+
+                        if way_b[0] != node.id:
                             way_b = way_b[::-1]
 
                         # way_a must end at the same node as way_b starts

@@ -1,6 +1,7 @@
 import codecs
 
 import lxml.etree as ET
+from xml.sax.saxutils import escape
 import re, htmlentitydefs
 
 
@@ -62,7 +63,7 @@ def print_first_block(road_net, gateways, junctions):
 def print_second_block(road_net, roads):
     roads_branch = ET.SubElement(road_net, "roads")
     for road in roads:
-        road_branch = ET.SubElement(roads_branch, "road", id=str(road.id), street=road.street_name,
+        road_branch = ET.SubElement(roads_branch, "road", id=str(road.id), street=escape(road.street_name).replace('"', '&quot;'),
                                     attrib={'from': str(road.starting_point.id), 'to': str(road.ending_point.id)})
         uplink_branch = ET.SubElement(road_branch, "uplink")
         ET.SubElement(uplink_branch, "main", length=str(road.calculate_length()), numberOfLanes=str(road.lanes_number))

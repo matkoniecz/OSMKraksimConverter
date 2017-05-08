@@ -65,6 +65,12 @@ class ConverterNormalizer(object):
                 way_b = ways[attached_ways[node.id][1]]
                 if way_a[0] == node.id or way_a[-1] == node.id:
                     if way_b[0] == node.id or way_b[-1] == node.id:
+                        if way_b[0] in way_a and way_b[-1] in way_a:
+                            # cycle would be created
+                            continue
+                        if way_a[0] in way_b and way_a[-1] in way_b:
+                            # cycle would be created
+                            continue
                         # both ways end at a given node
                         # node connects only to these two ways
                         # merge way into one

@@ -20,12 +20,12 @@ class Query:
     def __str__(self):
         return '''<union>
                       <query type="way">
-                        <bbox-query s="'''+self.latitudeSouth+'''" w="'''+self.longitudeWest+'''" n="'''+self.latitudeNorth+'''" e="'''+self.longitudeEast+'''"/>
+                        <bbox-query s="'''+str(self.latitudeSouth)+'''" w="'''+str(self.longitudeWest)+'''" n="'''+str(self.latitudeNorth)+'''" e="'''+str(self.longitudeEast)+'''"/>
                         <has-kv k="highway" regv="motorway|motorway_link|trunk|trunk_link|primary|primary_link|secondary|secondary_link|tertiary|tertiary_link|unclassified|residential"/>
                       </query>
                       <recurse type="way-node"/>
                       <query type="relation">
-                        <bbox-query s="'''+self.latitudeSouth+'''" w="'''+self.longitudeWest+'''" n="'''+self.latitudeNorth+'''" e="'''+self.longitudeEast+'''"/>
+                        <bbox-query s="'''+str(self.latitudeSouth)+'''" w="'''+str(self.longitudeWest)+'''" n="'''+str(self.latitudeNorth)+'''" e="'''+str(self.longitudeEast)+'''"/>
                         <has-kv k="restriction" regv="no_right_turn|no_left_turn|no_u_turn|no_straight_on|only_right_turn|only_left_turn|only_straight_on"/>
                       </query>
                   </union>

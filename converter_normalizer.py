@@ -157,10 +157,17 @@ class ConverterNormalizer(object):
             remade_result.append(result.get_node(id))
 
         unique_ids = set()
+        kicked_1 = 0
+        kicked_2 = 0
+        all_1 = 0
+        all_2 = 0
         for way_id, nodes_list in ways.items():
             kraksim_id = str(nodes_list[0]) + str(nodes_list[1])
+            all_1 += 1
             if kraksim_id in unique_ids:
+                kicked_1 += 1
                 print "JAPIERDOLE"
+                print "or id:"+str(nodes_list[0])
                 continue
             else:
                 unique_ids.add(kraksim_id)
@@ -173,8 +180,10 @@ class ConverterNormalizer(object):
                 remade_result.append(remade_way)
 
         for new_way in new_ways:
-            kraksim_id = str(nodes_list[0]) + str(nodes_list[1])
+            all_2 += 1
+            kraksim_id = str(new_way["nodes"][0]) + str(new_way["nodes"][1])
             if kraksim_id in unique_ids:
+                kicked_2 += 1
                 print "JAPIERDOLE2"
                 continue
             else:
@@ -190,6 +199,10 @@ class ConverterNormalizer(object):
         print "020202020202-------------"
         pp.pprint(remade_result.ways)
         #pp.pprint(remade_result.nodes)
+        print all_1
+        print kicked_1
+        print all_2
+        print kicked_2
         return remade_result
 
     @staticmethod

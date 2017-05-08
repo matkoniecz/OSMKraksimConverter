@@ -156,27 +156,50 @@ class ConverterNormalizer(object):
         for id in nodes_left:
             remade_result.append(result.get_node(id))
 
+        unique_ids = set()
+        kicked_1 = 0
+        kicked_2 = 0
+        all_1 = 0
+        all_2 = 0
         for way_id, nodes_list in ways.items():
-            base_way = result.get_way(way_id)
-            assert(len(nodes_list) == 2), 'all ways are point to point - problem with ' + str(nodes_list)
-            remade_way = ConverterNormalizer.remade_way(
-                base_way, remade_result, nodes_list)
-            remade_result.append(remade_way)
+            kraksim_id = str(nodes_list[0]) + str(nodes_list[1])
+            all_1 += 1
+            if kraksim_id in unique_ids:
+                kicked_1 += 1
+                print "or id:"+str(nodes_list[0])
+                print "or id:"+str(nodes_list[1])
+            else:
+                unique_ids.add(kraksim_id)
+                base_way = result.get_way(way_id)
+                remade_way = ConverterNormalizer.remade_way(
+                    base_way, remade_result, nodes_list)
+                remade_result.append(remade_way)
 
         for new_way in new_ways:
-            base_way = result.get_way(new_way["parent"])
-            assert(len(new_way["nodes"]) == 2), 'all ways are point to point - problem with ' + str(new_way["nodes"])
-            remade_way = ConverterNormalizer.remade_way(
-                base_way,
-                remade_result,
-                new_way["nodes"],
-                lowest_available_way_id)
-            lowest_available_way_id += 1
-            remade_result.append(remade_way)
+            all_2 += 1
+            kraksim_id = str(new_way["nodes"][0]) + str(new_way["nodes"][1])
+            if kraksim_id in unique_ids:
+                kicked_2 += 1
+                print "or id:"+str(new_way["nodes"][0])
+                print "or id:"+str(new_way["nodes"][1])
+                continue
+            else:
+                base_way = result.get_way(new_way["parent"])
+                remade_way = ConverterNormalizer.remade_way(
+                    base_way,
+                    remade_result,
+                    new_way["nodes"],
+                    lowest_available_way_id)
+                lowest_available_way_id += 1
+                remade_result.append(remade_way)
 
         print "020202020202-------------"
         pp.pprint(remade_result.ways)
-        pp.pprint(remade_result.nodes)
+        #pp.pprint(remade_result.nodes)
+        print all_1
+        print kicked_1
+        print all_2
+        print kicked_2
         return remade_result
 
     @staticmethod

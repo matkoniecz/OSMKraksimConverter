@@ -40,7 +40,8 @@ class ConverterNormalizer(object):
     @staticmethod
     def simplify_loaded_data(result):
         pp = pprint.PrettyPrinter(indent=4)
-        # pp.pprint(result.ways)
+        #print "xaxaxa"
+        #pp.pprint(result.ways)
 
         # transfer data to structure that allows editing
         lowest_available_way_id = 1
@@ -142,7 +143,6 @@ class ConverterNormalizer(object):
                     new_ways.append({"parent": way_id, "nodes": free_nodes})
                     free_nodes = [node_id]
             ways[way_id] = free_nodes
-        print new_ways
 
         remade_result = Result(elements=[], api=None)
         nodes_left = set()
@@ -156,25 +156,40 @@ class ConverterNormalizer(object):
         for id in nodes_left:
             remade_result.append(result.get_node(id))
 
+        unique_ids = set()
         for way_id, nodes_list in ways.items():
-            base_way = result.get_way(way_id)
-            remade_way = ConverterNormalizer.remade_way(
-                base_way, remade_result, nodes_list)
-            remade_result.append(remade_way)
+            kraksim_id = str(nodes_list[0]) + str(nodes_list[1])
+            if kraksim_id in unique_ids:
+                print "JAPIERDOLE"
+                continue
+            else:
+                unique_ids.add(kraksim_id)
+                print "chuj2"
+                print way_id
+                print nodes_list
+                base_way = result.get_way(way_id)
+                remade_way = ConverterNormalizer.remade_way(
+                    base_way, remade_result, nodes_list)
+                remade_result.append(remade_way)
 
         for new_way in new_ways:
-            base_way = result.get_way(new_way["parent"])
-            remade_way = ConverterNormalizer.remade_way(
-                base_way,
-                remade_result,
-                new_way["nodes"],
-                lowest_available_way_id)
-            lowest_available_way_id += 1
-            remade_result.append(remade_way)
+            kraksim_id = str(nodes_list[0]) + str(nodes_list[1])
+            if kraksim_id in unique_ids:
+                print "JAPIERDOLE2"
+                continue
+            else:
+                base_way = result.get_way(new_way["parent"])
+                remade_way = ConverterNormalizer.remade_way(
+                    base_way,
+                    remade_result,
+                    new_way["nodes"],
+                    lowest_available_way_id)
+                lowest_available_way_id += 1
+                remade_result.append(remade_way)
 
         print "020202020202-------------"
         pp.pprint(remade_result.ways)
-        pp.pprint(remade_result.nodes)
+        #pp.pprint(remade_result.nodes)
         return remade_result
 
     @staticmethod

@@ -158,12 +158,14 @@ class ConverterNormalizer(object):
 
         for way_id, nodes_list in ways.items():
             base_way = result.get_way(way_id)
+            assert(len(nodes_list) == 2), 'all ways are point to point - problem with ' + str(nodes_list)
             remade_way = ConverterNormalizer.remade_way(
                 base_way, remade_result, nodes_list)
             remade_result.append(remade_way)
 
         for new_way in new_ways:
             base_way = result.get_way(new_way["parent"])
+            assert(len(new_way["nodes"]) == 2), 'all ways are point to point - problem with ' + str(new_way["nodes"])
             remade_way = ConverterNormalizer.remade_way(
                 base_way,
                 remade_result,

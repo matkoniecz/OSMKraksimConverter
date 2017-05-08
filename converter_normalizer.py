@@ -127,16 +127,11 @@ class ConverterNormalizer(object):
             for index, node_id in enumerate(nodes_list):
                 # do not split at start on end where way terminates
                 free_nodes.append(node_id)
-                print way_id
                 if node_id == nodes_list[0]:
-                    print "start"
                     continue
                 if node_id == nodes_list[-1]:
-                    print "end"
                     continue
-                print "middle"
                 if len(attached_ways[node_id]) > 1:
-                    print "<", node_id, "> on ", way_id
                     # split nodes since beginning the way (or previous split)
                     # into a separate way so junctions end all ways and
                     # no way passes through more than two junctions
@@ -166,14 +161,10 @@ class ConverterNormalizer(object):
             all_1 += 1
             if kraksim_id in unique_ids:
                 kicked_1 += 1
-                print "JAPIERDOLE"
                 print "or id:"+str(nodes_list[0])
-                continue
+                print "or id:"+str(nodes_list[1])
             else:
                 unique_ids.add(kraksim_id)
-                print "chuj2"
-                print way_id
-                print nodes_list
                 base_way = result.get_way(way_id)
                 remade_way = ConverterNormalizer.remade_way(
                     base_way, remade_result, nodes_list)
@@ -184,7 +175,8 @@ class ConverterNormalizer(object):
             kraksim_id = str(new_way["nodes"][0]) + str(new_way["nodes"][1])
             if kraksim_id in unique_ids:
                 kicked_2 += 1
-                print "JAPIERDOLE2"
+                print "or id:"+str(new_way["nodes"][0])
+                print "or id:"+str(new_way["nodes"][1])
                 continue
             else:
                 base_way = result.get_way(new_way["parent"])

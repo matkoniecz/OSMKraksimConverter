@@ -9,7 +9,9 @@ if __name__ == "__main__":
     latitudeSouth, longitudeWest, latitudeNorth, longitudeEast = sys.argv[1], sys.argv[2], sys.argv[3], sys.argv[4]
     query = Query(latitudeSouth, longitudeWest, latitudeNorth, longitudeEast)
     cql = ConverterQueryLoader()
+    print str(query)
     result = cql.execute_query(str(query))
+    print result
     print "Kwerenda wykonana"
     converter_reader = ConverterReader(query)
     result = ConverterNormalizer.simplify_loaded_data(result)

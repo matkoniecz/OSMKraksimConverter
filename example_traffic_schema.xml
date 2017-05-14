@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<traffic>
+    <scheme count="1000">
+        <gateway id="1401241366">
+            <uniform a="0" b="140000"/>
+        </gateway>
+        <gateway id="206351259"/>
+    </scheme>
+    <scheme count="1000">
+        <gateway id="1401241366">
+            <uniform a="0" b="140000"/>
+        </gateway>
+        <gateway id="287628797"/>
+    </scheme>
+    <scheme count="100">
+        <gateway id="1876117446">
+            <point y="200"/>
+        </gateway>
+        <gateway id="287628797"/>
+    </scheme>
+</traffic>

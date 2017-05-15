@@ -84,7 +84,26 @@ class ConverterReader:
 
     def read_to_internal_structure(self, result):
 
-        # wykrywanie skrzyzowan
+        # Uproszczenie skomplikowanych ID dróg i węzłów
+        id_counter = 1
+        way_id_counter = 1
+        id_dict = {}
+        print "----gateways----"
+        for way in result.ways:
+            all_nodes_of_way = way.get_nodes(resolve_missing=False)
+            for node in all_nodes_of_way:
+                if node.id in id_dict:
+                    node.id = id_dict[node.id]
+                else:
+                    id_dict[node.id] = id_counter
+                    node.id = id_counter
+                    id_counter += 1
+                print "Node_id_counter: \t" + str(id_counter)
+            way.id = way_id_counter
+            way_id_counter += 1
+            print "Way_id_counter: \t" + str(way_id_counter)
+        print "----gateways----"
+
         nodes_that_represent_junctions = self.find_junctions(result.ways)
 
         print 'koniec wykrywanie skrzyzowan'
@@ -97,12 +116,22 @@ class ConverterReader:
         # tworzenie obiektow Gateway
         self.create_gateways(result.ways)
 
+
+
         print 'koniec tworzenie obiektow Gateway'
 
         # zapewnienie dwukierunkowosci drog z lub do gateway'ow
         self.provide_bidirectional_ways_to_gateways()
 
         print 'koniec zapewnienie dwukierunkowosci drog z lub do gatewayow'
+
+        # gateway_id_counter = 1
+        # print "----gateways----"
+        # for gateway in self.gateways:
+        #     gateway.id = gateway_id_counter
+        #     gateway_id_counter += 1
+        #     print gateway.id
+        # print "----gateways----"
 
         # uzupelnienie slownika z priorytetami drog
         ways_priorities = fill_dictionary()

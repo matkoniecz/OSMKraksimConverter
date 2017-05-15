@@ -3,6 +3,7 @@ import codecs
 import lxml.etree as ET
 from xml.sax.saxutils import escape
 import re, htmlentitydefs
+import random
 
 
 def unescape(text):
@@ -47,8 +48,29 @@ def generate_traffic(file_path, gateways):
                 ET.SubElement(gateway_1_branch, "uniform", a="0", b="8000")
                 ET.SubElement(scheme_branch, "gateway", id=str(gateway_2.id))
 
-                tree = ET.ElementTree(traffic_net)
-                tree.write(file_path + "_generator.xml", pretty_print=True)
+    tree = ET.ElementTree(traffic_net)
+    tree.write(file_path + "_generator.xml", pretty_print=True)
+
+def generate_simple_traffic(file_path, gateways):
+    traffic_net = ET.Element("traffic")
+    set_gateways = set(gateways)
+    counter = 100
+
+    while len(set_gateways) > 1:
+        sample = random.sample(set_gateways, 2)
+        gateway_1 = sample[0]
+        gateway_2 = sample[1]
+        if not gateway_1.id == gateway_2.id:
+            scheme_branch = ET.SubElement(traffic_net, "scheme", count="100")
+            gateway_1_branch = ET.SubElement(scheme_branch, "gateway", id=str(gateway_1.id))
+            ET.SubElement(gateway_1_branch, "uniform", a="0", b=str(counter))
+            ET.SubElement(scheme_branch, "gateway", id=str(gateway_2.id))
+            set_gateways.remove(gateway_1)
+            set_gateways.remove(gateway_2)
+            counter += 10
+
+    tree = ET.ElementTree(traffic_net)
+    tree.write(file_path + "_generator.xml", pretty_print=True)
 
 
 def print_first_block(road_net, gateways, junctions):
@@ -143,5 +165,6 @@ class ConverterPrinter:
         print 'koniec poprawiania pliku'
 
         print 'generowanie ruchu'
-        # generate_traffic(file_path, gateways)
+        generate_simple_traffic("traffic_" + file_path, gateways)
+        correct_xml_file("traffic_" + file_path + "_generator")
         print 'koniec generowania ruchu'

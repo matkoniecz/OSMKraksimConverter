@@ -21,7 +21,7 @@ class ConverterNormalizer(object):
 
     @staticmethod
     def calculate_attached_ways(ways):
-        """calculates attacjed ways for every node from dictionary of ways
+        """calculates attached ways for every node from dictionary of ways
 
         Args:
             ways (dict): keys: way_id, values: list of nodes ids forming way
@@ -39,6 +39,68 @@ class ConverterNormalizer(object):
 
     @staticmethod
     def simplify_loaded_data(result):
+        result = ConverterNormalizer.edit_loaded_data(result)
+        try:
+            ConverterNormalizer.validate_returned_data(result)
+        except ConverterNormalizer.ConversionFailed:
+            print "Inconsistency in produced data was detected. This should not happen. Kraksim may fail to load produced map."
+            print str(ConverterNormalizer.ConversionFailed)
+        return result
+
+    class ConversionFailed(Exception):
+        def __init__(self, str):
+            return super(ConverterNormalizer.ConversionFailed, self).__init__(str)
+
+    @staticmethod
+    def validate_returned_data(result):
+        ConverterNormalizer.only_one_way_between_nodes(result)
+        ConverterNormalizer.each_way_connects_two_nodes(result)
+        ConverterNormalizer.no_nodes_on_exactly_two_ways(result)
+
+    @staticmethod
+    def only_one_way_between_nodes(result):
+        existing_ways = {}
+        for way in result.ways:
+            nodes = way.get_nodes(resolve_missing=False)
+            way_id = str(nodes[0].id) + '_' + str(nodes[1].id)
+            present = True
+            try:
+                existing_ways[way_id]
+            except KeyError as e:
+                present = False
+
+            if present:
+                error_message = "connection between nodes " + str(nodes[0].id) + " and " + str(nodes[1].id) + " is duplicated"
+                error_message += " - ways " + str(way_id) + " " + str(existing_ways[way_id])
+                raise ConverterNormalizer.ConversionFailed(error_message)
+            existing_ways[way_id] = way_id
+
+    @staticmethod
+    def each_way_connects_two_nodes(result):
+        for way in result.ways:
+            nodes = way.get_nodes(resolve_missing=False)
+            if len(nodes) != 2:
+                error_message = str(way.id) + " has " + str(len(nodes)) + " nodes - " + str(nodes)
+                raise ConverterNormalizer.ConversionFailed(error_message)
+
+    @staticmethod
+    def no_nodes_on_exactly_two_ways(result):
+        touching_ways_by_node = {}
+        for way in result.ways:
+            nodes = way.get_nodes(resolve_missing=False)
+            for node in nodes:
+                try:
+                    touching_ways_by_node[node.id]
+                except KeyError as e:
+                    touching_ways_by_node[node.id] = 0
+                touching_ways_by_node[node.id] += 1
+        for node_id, attached_ways_count in touching_ways_by_node.items():
+            if attached_ways_count == 2:
+                error_message = str(node_id) + " is attached to exactly two ways. Such nodes are supposed to be eliminated"
+                raise ConverterNormalizer.ConversionFailed(error_message)
+
+    @staticmethod
+    def edit_loaded_data(result):
         pp = pprint.PrettyPrinter(indent=4)
         # pp.pprint(result.ways)
 

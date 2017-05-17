@@ -204,5 +204,166 @@ class TestStringMethods(unittest.TestCase):
             self.assertEqual(len(result.ways[i].get_nodes()), 2)
         # TODO check topology
 
+    def test_remove_duplicated_ways(self):
+        result = Result(elements=[], api=None)
+        start = Node(node_id=1, lat=1, lon=-10, attributes={}, result=result)
+        end = Node(node_id=3, lat=3, lon=-50, attributes={}, result=result)
+
+        way_a = Way(
+            way_id=1,
+            center_lat=1.5,
+            center_lon=-30,
+            node_ids=[start.id,
+                      end.id],
+            attributes={},
+            result=result)
+        way_b = Way(
+            way_id=2,
+            center_lat=1.5,
+            center_lon=-30,
+            node_ids=[start.id,
+                      end.id],
+            attributes={},
+            result=result)
+        result.append(start)
+        result.append(end)
+        result.append(way_a)
+        result.append(way_b)
+        self.assertEqual(len(result.ways), 2)
+        self.assertEqual(len(result.nodes), 2)
+        result = ConverterNormalizer.simplify_loaded_data(result)
+        self.assertEqual(len(result.ways), 1)
+        self.assertEqual(len(result.nodes), 2)
+        node_a = result.nodes[0]
+        node_b = result.nodes[1]
+        if node_a.id != 1:
+            node_a, node_b = node_b, node_a
+        self.assertEqual(node_a.id, 1)
+        self.assertEqual(node_a.lat, 1)
+        self.assertEqual(node_a.lon, -10)
+        self.assertEqual(node_b.id, 3)
+        self.assertEqual(node_b.lat, 3)
+        self.assertEqual(node_b.lon, -50)
+
+    def test_selfvalidator_only_one_way_between_nodes(self):
+        result = Result(elements=[], api=None)
+        start = Node(node_id=1, lat=1, lon=-10, attributes={}, result=result)
+        end = Node(node_id=3, lat=3, lon=-50, attributes={}, result=result)
+
+        way_a = Way(
+            way_id=1,
+            center_lat=1.5,
+            center_lon=-30,
+            node_ids=[start.id,
+                      end.id],
+            attributes={},
+            result=result)
+        way_b = Way(
+            way_id=2,
+            center_lat=1.5,
+            center_lon=-30,
+            node_ids=[start.id,
+                      end.id],
+            attributes={},
+            result=result)
+        result.append(start)
+        result.append(end)
+        result.append(way_a)
+        result.append(way_b)
+        #ConverterNormalizer.only_one_way_between_nodes(result)
+        self.assertRaises(ConverterNormalizer.ConversionFailed, ConverterNormalizer.only_one_way_between_nodes, result)
+
+    def test_selfvalidator_each_way_connects_two_nodes(self):
+        result = Result(elements=[], api=None)
+        start_of_long_way = Node(
+            node_id=1,
+            lat=1,
+            lon=-10,
+            attributes={},
+            result=result)
+        end_of_long_way = Node(
+            node_id=2,
+            lat=5,
+            lon=-90,
+            attributes={},
+            result=result)
+        junction = Node(
+            node_id=4,
+            lat=3,
+            lon=-50,
+            attributes={},
+            result=result)
+        node_for_short_way = Node(
+            node_id=5,
+            lat=3,
+            lon=-100,
+            attributes={},
+            result=result)
+
+        long_way = Way(
+            way_id=1,
+            center_lat=3,
+            center_lon=-50,
+            node_ids=[start_of_long_way.id,
+                      junction.id,
+                      end_of_long_way.id],
+            attributes={},
+            result=result)
+        short_way = Way(
+            way_id=2,
+            center_lat=3,
+            center_lon=-75,
+            node_ids=[junction.id,
+                      node_for_short_way.id],
+            attributes={},
+            result=result)
+
+        result.append(start_of_long_way)
+        result.append(end_of_long_way)
+        result.append(junction)
+        result.append(node_for_short_way)
+        result.append(long_way)
+        result.append(short_way)
+        self.failUnlessRaises(ConverterNormalizer.ConversionFailed, ConverterNormalizer.each_way_connects_two_nodes, result)
+
+    def test_selfvalidator_no_nodes_on_exactly_two_ways(self):
+        result = Result(elements=[], api=None)
+        start = Node(node_id=1, lat=1, lon=10, attributes={}, result=result)
+        discarding_1 = Node(
+            node_id=2,
+            lat=2,
+            lon=20,
+            attributes={},
+            result=result)
+        middle = Node(
+            node_id=4,
+            lat=4,
+            lon=40,
+            attributes={},
+            result=result)
+        end = Node(node_id=5, lat=5, lon=50, attributes={}, result=result)
+
+        result.append(start)
+        result.append(middle)
+        result.append(end)
+
+        way_a = Way(
+            way_id=1,
+            center_lat=3,
+            center_lon=30,
+            node_ids=[start.id, middle.id],
+            attributes={},
+            result=result)
+        result.append(way_a)
+        way_b = Way(
+            way_id=2,
+            center_lat=3,
+            center_lon=30,
+            node_ids=[middle.id, end.id],
+            attributes={},
+            result=result)
+        result.append(way_b)
+        self.failUnlessRaises(ConverterNormalizer.ConversionFailed, ConverterNormalizer.no_nodes_on_exactly_two_ways, result)
+
 if __name__ == '__main__':
     unittest.main()

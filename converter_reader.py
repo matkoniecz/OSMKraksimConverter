@@ -64,7 +64,9 @@ def fill_dictionary():
     ways_priorities['primary'] = 3
     ways_priorities['primary_link'] = 3
     ways_priorities['trunk'] = 4
+    ways_priorities['trunk_link'] = 4
     ways_priorities['motorway'] = 5
+    ways_priorities['motorway_link'] = 5
 
     return ways_priorities
 

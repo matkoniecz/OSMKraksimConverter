@@ -132,23 +132,17 @@ class ConverterNormalizer(object):
             for index, node_id in enumerate(nodes_list):
                 # do not split at start on end where way terminates
                 free_nodes.append(node_id)
-                print way_id
                 if node_id == nodes_list[0]:
-                    print "start"
                     continue
                 if node_id == nodes_list[-1]:
-                    print "end"
                     continue
-                print "middle"
                 if len(attached_ways[node_id]) > 1:
-                    print "<", node_id, "> on ", way_id
                     # split nodes since beginning the way (or previous split)
                     # into a separate way so junctions end all ways and
                     # no way passes through more than two junctions
                     new_ways.append({"parent": way_id, "nodes": free_nodes})
                     free_nodes = [node_id]
             ways[way_id] = free_nodes
-        print new_ways
 
         remade_result = Result(elements=[], api=None)
         nodes_left = set()
@@ -172,8 +166,6 @@ class ConverterNormalizer(object):
             all_1 += 1
             if kraksim_id in unique_ids:
                 kicked_1 += 1
-                print "or id:"+str(nodes_list[0])
-                print "or id:"+str(nodes_list[1])
             else:
                 unique_ids.add(kraksim_id)
                 base_way = result.get_way(way_id)
@@ -186,8 +178,6 @@ class ConverterNormalizer(object):
             kraksim_id = str(new_way["nodes"][0]) + str(new_way["nodes"][1])
             if kraksim_id in unique_ids:
                 kicked_2 += 1
-                print "or id:"+str(new_way["nodes"][0])
-                print "or id:"+str(new_way["nodes"][1])
                 continue
             else:
                 base_way = result.get_way(new_way["parent"])
@@ -199,13 +189,8 @@ class ConverterNormalizer(object):
                 lowest_available_way_id += 1
                 remade_result.append(remade_way)
 
-        print "020202020202-------------"
-        pp.pprint(remade_result.ways)
+        #pp.pprint(remade_result.ways)
         #pp.pprint(remade_result.nodes)
-        print all_1
-        print kicked_1
-        print all_2
-        print kicked_2
         return remade_result
 
     @staticmethod

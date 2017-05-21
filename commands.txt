@@ -1,13 +1,9 @@
 python converter_runner.py latitudeSouth, longitudeWest, latitudeNorth, longitudeEast
 
-python converter_runner.py 66.6826 27.9523 66.6875 28.0072 out.xml
-python converter_runner.py 66.68568 27.97458 66.68606 27.97586 out.xml
+Kraków:
+python converter_runner.py 50.045191 19.908397 50.078581 19.983928 krakow
 
-
-cały kraków:
-python converter_runner.py 50.045191 19.908397 50.078581 19.983928 krakowcaly
-
-inne, do testów:
+other for tests:
 python converter_runner.py  49.7952   23.9691  49.8795   24.1092 lwow
 python converter_runner.py -15.8425  -47.9358 -15.7166  -47.8118 brasilla
 python converter_runner.py  42.3382  -71.0915  42.3821  -71.0156 boston

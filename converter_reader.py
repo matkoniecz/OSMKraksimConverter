@@ -100,10 +100,10 @@ class ConverterReader:
                     id_dict[node.id] = id_counter
                     node.id = id_counter
                     id_counter += 1
-                print "Node_id_counter: \t" + str(id_counter)
+                # print "Node_id_counter: \t" + str(id_counter)
             way.id = way_id_counter
             way_id_counter += 1
-            print "Way_id_counter: \t" + str(way_id_counter)
+            # print "Way_id_counter: \t" + str(way_id_counter)
         print "----gateways----"
 
         nodes_that_represent_junctions = self.find_junctions(result.ways)

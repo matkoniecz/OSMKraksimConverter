@@ -42,9 +42,9 @@ class ConverterNormalizer(object):
         result = ConverterNormalizer.edit_loaded_data(result)
         try:
             ConverterNormalizer.validate_returned_data(result)
-        except ConverterNormalizer.ConversionFailed:
+        except ConverterNormalizer.ConversionFailed, error:
             print "Inconsistency in produced data was detected. This should not happen. Kraksim may fail to load produced map."
-            print str(ConverterNormalizer.ConversionFailed)
+            print str(ConverterNormalizer.ConversionFailed) + ' ' + str(error)
         return result
 
     class ConversionFailed(Exception):

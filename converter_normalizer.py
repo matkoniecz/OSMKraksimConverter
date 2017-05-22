@@ -49,7 +49,7 @@ class ConverterNormalizer(object):
 
     class ConversionFailed(Exception):
         def __init__(self, str):
-            return super(ConverterNormalizer.ConversionFailed, self).__init__(str)
+            super(ConverterNormalizer.ConversionFailed, self).__init__(str)
 
     @staticmethod
     def validate_returned_data(result):

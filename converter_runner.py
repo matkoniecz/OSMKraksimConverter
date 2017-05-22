@@ -5,16 +5,20 @@ from converter_reader import *
 from converter_normalizer import ConverterNormalizer
 from query_loader import Query
 
-if __name__ == "__main__":
-    latitudeSouth, longitudeWest, latitudeNorth, longitudeEast = sys.argv[1], sys.argv[2], sys.argv[3], sys.argv[4]
+def download_data(latitudeSouth, longitudeWest, latitudeNorth, longitudeEast):
     query = Query(latitudeSouth, longitudeWest, latitudeNorth, longitudeEast)
     cql = ConverterQueryLoader()
     print str(query)
     result = cql.execute_query(str(query))
     print result
     print "Kwerenda wykonana"
-    converter_reader = ConverterReader(query)
+    return result
+
+if __name__ == "__main__":
+    latitudeSouth, longitudeWest, latitudeNorth, longitudeEast = sys.argv[1], sys.argv[2], sys.argv[3], sys.argv[4]
+    result = download_data(latitudeSouth, longitudeWest, latitudeNorth, longitudeEast)
     result = ConverterNormalizer.simplify_loaded_data(result)
+    converter_reader = ConverterReader(query)
     converter_reader.read_to_internal_structure(result)
     ConverterPrinter.print_to_file(sys.argv[5], converter_reader.gateways, converter_reader.junctions,
                                    converter_reader.ways)

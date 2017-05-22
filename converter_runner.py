@@ -12,12 +12,16 @@ def download_data(latitudeSouth, longitudeWest, latitudeNorth, longitudeEast):
     result = cql.execute_query(str(query))
     print result
     print "Kwerenda wykonana"
-    return result
+    return result, query
+
+def get_data(latitudeSouth, longitudeWest, latitudeNorth, longitudeEast):
+    result, query = download_data(latitudeSouth, longitudeWest, latitudeNorth, longitudeEast)
+    result = ConverterNormalizer.simplify_loaded_data(result)
+    return result, query
 
 if __name__ == "__main__":
     latitudeSouth, longitudeWest, latitudeNorth, longitudeEast = sys.argv[1], sys.argv[2], sys.argv[3], sys.argv[4]
-    result = download_data(latitudeSouth, longitudeWest, latitudeNorth, longitudeEast)
-    result = ConverterNormalizer.simplify_loaded_data(result)
+    result, query = get_data(latitudeSouth, longitudeWest, latitudeNorth, longitudeEast)
     converter_reader = ConverterReader(query)
     converter_reader.read_to_internal_structure(result)
     ConverterPrinter.print_to_file(sys.argv[5], converter_reader.gateways, converter_reader.junctions,

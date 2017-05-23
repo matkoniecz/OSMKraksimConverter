@@ -61,6 +61,7 @@ def binary_search_for_problems(latitudeSouth, longitudeWest, latitudeNorth, long
 
     coords = str(latitudeSouth) + ' ' + str(longitudeWest) + ' ' + str(latitudeNorth) + ' ' + str(longitudeEast)
     print 'following areas is smallest found by binary search: ' + coords
+    print str(Query(latitudeSouth, longitudeWest, latitudeNorth, longitudeEast))
 
 if __name__ == "__main__":
     latitudeSouth, longitudeWest, latitudeNorth, longitudeEast = sys.argv[1], sys.argv[2], sys.argv[3], sys.argv[4]

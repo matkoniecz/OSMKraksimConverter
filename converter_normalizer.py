@@ -100,6 +100,29 @@ class ConverterNormalizer(object):
                 raise ConverterNormalizer.ConversionFailed(error_message)
 
     @staticmethod
+    def is_this_node_fulfilling_steep_1_conditions(node, result, ways, attached_ways):
+        # true junction, with more than two ways
+        if len(attached_ways[node.id]) != 2:
+            return False
+
+        # self-joining way (roundabout)
+        if attached_ways[node.id][0] == attached_ways[node.id][1]:
+            return False
+
+        way_a = ways[attached_ways[node.id][0]]
+        way_b = ways[attached_ways[node.id][1]]
+        if way_a[0] == node.id or way_a[-1] == node.id:
+            if way_b[0] == node.id or way_b[-1] == node.id:
+                if way_b[0] in way_a and way_b[-1] in way_a:
+                    # cycle would be created
+                    return False
+                if way_a[0] in way_b and way_a[-1] in way_b:
+                    # cycle would be created
+                    return False
+                return True
+        return False
+
+    @staticmethod
     def edit_loaded_data(result):
         pp = pprint.PrettyPrinter(indent=4)
         # pp.pprint(result.ways)
@@ -119,57 +142,51 @@ class ConverterNormalizer(object):
         attached_ways = ConverterNormalizer.calculate_attached_ways(ways)
 
         # step 1
+        # find pair of ways that both end at the same node, and the node is touching only these two ways
+        # as additional condition: these two ways are different ways (self-joining ways may appear at roundabouts)
+        # such ways may be safely merged
         for node in result.nodes:
-            if len(attached_ways[node.id]) == 2:
-                if attached_ways[node.id][0] == attached_ways[node.id][1]:
-                    continue
+            if ConverterNormalizer.is_this_node_fulfilling_steep_1_conditions(node, result, ways, attached_ways):
                 way_a = ways[attached_ways[node.id][0]]
                 way_b = ways[attached_ways[node.id][1]]
-                if way_a[0] == node.id or way_a[-1] == node.id:
-                    if way_b[0] == node.id or way_b[-1] == node.id:
-                        if way_b[0] in way_a and way_b[-1] in way_a:
-                            # cycle would be created
-                            continue
-                        if way_a[0] in way_b and way_a[-1] in way_b:
-                            # cycle would be created
-                            continue
-                        # both ways end at a given node
-                        # node connects only to these two ways
-                        # merge way into one
-                        #
-                        # so delete one way and move its nodes
-                        # to the second one
-                        # it may require reversing direction of
-                        # nodes
-                        #
-                        # TODO - is it OK to ignore tags from deleted way?
-                        # TODO HACK - not handled that some tags
-                        # depend on direction of the way
-                        # especially oneway
+                # both ways end at a given node
+                # node connects only to these two ways
+                # merge way into one
+                #
+                # so delete one way and move its nodes
+                # to the second one
+                # it may require reversing direction of
+                # nodes
+                #
+                # TODO - is it OK to ignore tags from deleted way?
+                # TODO HACK - not handled that some tags
+                # depend on direction of the way
+                # especially oneway
 
-                        del ways[attached_ways[node.id][1]]  # deletes way_b
+                del ways[attached_ways[node.id][1]]  # deletes way_b
 
-                        # reverse ways so that
-                        # - way_a ends on the common node
-                        # - way_b starts on the common node
-                        if way_a[-1] != node.id:
-                            way_a = way_a[::-1]
+                # reverse ways so that
+                # - way_a ends on the common node
+                # - way_b starts on the common node
+                if way_a[-1] != node.id:
+                    way_a = way_a[::-1]
 
-                        if way_b[0] != node.id:
-                            way_b = way_b[::-1]
+                if way_b[0] != node.id:
+                    way_b = way_b[::-1]
 
-                        # way_a must end at the same node as way_b starts
-                        assert(way_a[-1] == way_b[0]), str(way_a[-1]) + ' and ' + str(way_b[0]) + ' was supposed to be the same id'
+                # way_a must end at the same node as way_b starts
+                error = str(way_a[-1]) + ' and ' + str(way_b[0]) + ' was supposed to be the same id'
+                assert(way_a[-1] == way_b[0]), error
 
-                        # remove from the second way node that appears in both
-                        way_b = way_b[1:]
+                # remove from the second way node that appears in both
+                way_b = way_b[1:]
 
-                        # merge second way into the first
-                        ways[attached_ways[node.id][0]] += way_b
+                # merge second way into the first
+                ways[attached_ways[node.id][0]] += way_b
 
-                        # recalculate, as way deletion
-                        # makes part of data invalid
-                        attached_ways = ConverterNormalizer.calculate_attached_ways(ways)
+                # recalculate, as way deletion
+                # makes part of data invalid
+                attached_ways = ConverterNormalizer.calculate_attached_ways(ways)
 
         # step 2
         for node in result.nodes:

@@ -137,7 +137,7 @@ class TestStringMethods(unittest.TestCase):
         self.assertEqual(node_b.lon, -50)
 
     def test_the_simplest_splitting_of_ways(self):
-        # in OSM way may end at any place - juction is just node connected to mumtiple ways
+        # in OSM way may end at any place - juction is just node connected to multiple ways
         # it is possible to have a real junction formed by two ways joining, it is also
         # possible to have nodes that belong to two ways, without a real junction
         # (both ways end at that node and are representing a single road)

@@ -245,6 +245,65 @@ class TestStringMethods(unittest.TestCase):
         self.assertEqual(node_b.lat, 3)
         self.assertEqual(node_b.lon, -50)
 
+    def test_p_shaped_topology(self):
+        # this test possible case that caused an unexpected bug
+        # due to splitting and deduplication P shape should be reduced to single way (| shape)
+
+        result = Result(elements=[], api=None)
+        start_of_long_way = Node(
+            node_id=1,
+            lat=1,
+            lon=-10,
+            attributes={},
+            result=result)
+        end_of_long_way = Node(
+            node_id=2,
+            lat=5,
+            lon=-90,
+            attributes={},
+            result=result)
+        junction = Node(
+            node_id=4,
+            lat=3,
+            lon=-50,
+            attributes={},
+            result=result)
+
+        long_way = Way(
+            way_id=1,
+            center_lat=3,
+            center_lon=-50,
+            node_ids=[start_of_long_way.id,
+                      junction.id,
+                      end_of_long_way.id],
+            attributes={},
+            result=result)
+        short_way = Way(
+            way_id=2,
+            center_lat=3,
+            center_lon=-75,
+            node_ids=[junction.id,
+                      start_of_long_way.id],
+            attributes={},
+            result=result)
+
+        result.append(start_of_long_way)
+        result.append(end_of_long_way)
+        result.append(junction)
+        result.append(long_way)
+        result.append(short_way)
+
+        self.assertEqual(len(result.ways), 2)
+        self.assertEqual(len(result.nodes), 3)
+
+        result = ConverterNormalizer.simplify_loaded_data(result)
+
+        self.assertEqual(len(result.ways), 1)
+        self.assertEqual(len(result.nodes), 2)
+        for i in range(3):
+            self.assertEqual(len(result.ways[i].get_nodes()), 2)
+        # TODO check topology
+
     def test_selfvalidator_only_one_way_between_nodes(self):
         result = Result(elements=[], api=None)
         start = Node(node_id=1, lat=1, lon=-10, attributes={}, result=result)

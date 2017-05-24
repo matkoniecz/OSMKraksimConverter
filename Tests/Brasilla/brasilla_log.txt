@@ -1,0 +1,113 @@
+<union>
+                      <query type="way">
+                        <bbox-query s="-15.8425" w="-47.9358" n="-15.7166" e="-47.8118"/>
+                        <has-kv k="highway" regv="motorway|motorway_link|trunk|trunk_link|primary|primary_link|secondary|secondary_link|tertiary|tertiary_link|unclassified|residential"/>
+                      </query>
+                      <recurse type="way-node"/>
+                      <query type="relation">
+                        <bbox-query s="-15.8425" w="-47.9358" n="-15.7166" e="-47.8118"/>
+                        <has-kv k="restriction" regv="no_right_turn|no_left_turn|no_u_turn|no_straight_on|only_right_turn|only_left_turn|only_straight_on"/>
+                      </query>
+                  </union>
+                  <print />
+<overpy.Result object at 0x0000000002BB4240>
+Kwerenda wykonana
+Inconsistency in produced data was detected. This should not happen. Kraksim may fail to load produced map.
+<class 'converter_normalizer.ConversionFailed'> connection between nodes 2200026969 and 2200026984 is duplicated - ways 2200026969_2200026984 2200026969_2200026984
+----gateways----
+----gateways----
+koniec wykrywanie skrzyzowan
+koniec tworzenie obiektow Way i Junction
+koniec tworzenie obiektow Gateway
+koniec zapewnienie dwukierunkowosci drog z lub do gatewayow
+koniec stworzenie akcji
+koniec usuwanie niepotrzebnych akcji na bazie restrykcji wczytanych z relacji
+koniec tworzenie obiektow Rule
+wypisywanie bloku nr 1
+koniec wypisywanie bloku nr 1
+wypisywanie bloku nr 2
+koniec wypisywanie bloku nr 2
+wypisywanie bloku nr 3
+koniec wypisywanie bloku nr 3
+zapisywanie pliku
+koniec zapisywania pliku
+poprawianie pliku
+koniec poprawiania pliku
+generowanie ruchu
+koniec generowania ruchu
+<union>
+                      <query type="way">
+                        <bbox-query s="-15.8425" w="-47.9358" n="-15.7166" e="-47.8118"/>
+                        <has-kv k="highway" regv="motorway|motorway_link|trunk|trunk_link|primary|primary_link|secondary|secondary_link|tertiary|tertiary_link|unclassified|residential"/>
+                      </query>
+                      <recurse type="way-node"/>
+                      <query type="relation">
+                        <bbox-query s="-15.8425" w="-47.9358" n="-15.7166" e="-47.8118"/>
+                        <has-kv k="restriction" regv="no_right_turn|no_left_turn|no_u_turn|no_straight_on|only_right_turn|only_left_turn|only_straight_on"/>
+                      </query>
+                  </union>
+                  <print />
+<overpy.Result object at 0x0000000009A30828>
+Kwerenda wykonana
+Inconsistency in produced data was detected. This should not happen. Kraksim may fail to load produced map.
+<class 'converter_normalizer.ConversionFailed'> connection between nodes 2200026969 and 2200026984 is duplicated - ways 2200026969_2200026984 2200026969_2200026984
+<union>
+                      <query type="way">
+                        <bbox-query s="-15.8425" w="-47.9358" n="-15.77955" e="-47.8738"/>
+                        <has-kv k="highway" regv="motorway|motorway_link|trunk|trunk_link|primary|primary_link|secondary|secondary_link|tertiary|tertiary_link|unclassified|residential"/>
+                      </query>
+                      <recurse type="way-node"/>
+                      <query type="relation">
+                        <bbox-query s="-15.8425" w="-47.9358" n="-15.77955" e="-47.8738"/>
+                        <has-kv k="restriction" regv="no_right_turn|no_left_turn|no_u_turn|no_straight_on|only_right_turn|only_left_turn|only_straight_on"/>
+                      </query>
+                  </union>
+                  <print />
+<overpy.Result object at 0x0000000009A30908>
+Kwerenda wykonana
+Inconsistency in produced data was detected. This should not happen. Kraksim may fail to load produced map.
+<class 'converter_normalizer.ConversionFailed'> 142409752 has 3 nodes - [<overpy.Node id=1558428139 lat=-15.7940858 lon=-47.9359845>, <overpy.Node id=1558428136 lat=-15.7933841 lon=-47.9357272>, <overpy.Node id=1558428136 lat=-15.7933841 lon=-47.9357272>]
+<union>
+                      <query type="way">
+                        <bbox-query s="-15.8425" w="-47.9358" n="-15.811025" e="-47.9048"/>
+                        <has-kv k="highway" regv="motorway|motorway_link|trunk|trunk_link|primary|primary_link|secondary|secondary_link|tertiary|tertiary_link|unclassified|residential"/>
+                      </query>
+                      <recurse type="way-node"/>
+                      <query type="relation">
+                        <bbox-query s="-15.8425" w="-47.9358" n="-15.811025" e="-47.9048"/>
+                        <has-kv k="restriction" regv="no_right_turn|no_left_turn|no_u_turn|no_straight_on|only_right_turn|only_left_turn|only_straight_on"/>
+                      </query>
+                  </union>
+                  <print />
+<overpy.Result object at 0x0000000019B6C080>
+Kwerenda wykonana
+Inconsistency in produced data was detected. This should not happen. Kraksim may fail to load produced map.
+<class 'converter_normalizer.ConversionFailed'> 484599410 has 3 nodes - [<overpy.Node id=1543459431 lat=-15.8272329 lon=-47.9081529>, <overpy.Node id=1543459464 lat=-15.8268784 lon=-47.9073048>, <overpy.Node id=1543452545 lat=-15.8271658 lon=-47.9073426>]
+<union>
+                      <query type="way">
+                        <bbox-query s="-15.8425" w="-47.9358" n="-15.8267625" e="-47.9203"/>
+                        <has-kv k="highway" regv="motorway|motorway_link|trunk|trunk_link|primary|primary_link|secondary|secondary_link|tertiary|tertiary_link|unclassified|residential"/>
+                      </query>
+                      <recurse type="way-node"/>
+                      <query type="relation">
+                        <bbox-query s="-15.8425" w="-47.9358" n="-15.8267625" e="-47.9203"/>
+                        <has-kv k="restriction" regv="no_right_turn|no_left_turn|no_u_turn|no_straight_on|only_right_turn|only_left_turn|only_straight_on"/>
+                      </query>
+                  </union>
+                  <print />
+<overpy.Result object at 0x000000001AC87588>
+Kwerenda wykonana
+Inconsistency in produced data was detected. This should not happen. Kraksim may fail to load produced map.
+<class 'converter_normalizer.ConversionFailed'> 3021493338 is attached to exactly two ways. Such nodes are supposed to be eliminated
+<union>
+                      <query type="way">
+                        <bbox-query s="-15.8425" w="-47.9358" n="-15.83463125" e="-47.92805"/>
+                        <has-kv k="highway" regv="motorway|motorway_link|trunk|trunk_link|primary|primary_link|secondary|secondary_link|tertiary|tertiary_link|unclassified|residential"/>
+                      </query>
+                      <recurse type="way-node"/>
+                      <query type="relation">
+                        <bbox-query s="-15.8425" w="-47.9358" n="-15.83463125" e="-47.92805"/>
+                        <has-kv k="restriction" regv="no_right_turn|no_left_turn|no_u_turn|no_straight_on|only_right_turn|only_left_turn|only_straight_on"/>
+                      </query>
+                  </union>
+                  <print />

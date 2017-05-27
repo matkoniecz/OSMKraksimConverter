@@ -106,7 +106,10 @@ class ConverterNormalizer(object):
 
         # transfer data to structure that allows editing
         lowest_available_way_id = 1
+
+        # dictionary indexed by way id, entries are list of nodes that form the way
         ways = {}
+
         for way in result.ways:
             nodes = way.get_nodes(resolve_missing=False)
             list_of_nodes = []
@@ -116,6 +119,7 @@ class ConverterNormalizer(object):
             if lowest_available_way_id <= way.id:
                 lowest_available_way_id = way.id + 1
 
+        # indexed by nodes, entries are lists of way ids passing through a given node
         attached_ways = ConverterNormalizer.calculate_attached_ways(ways)
 
         # step 1

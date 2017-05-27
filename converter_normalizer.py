@@ -100,29 +100,6 @@ class ConverterNormalizer(object):
                 raise ConverterNormalizer.ConversionFailed(error_message)
 
     @staticmethod
-    def is_this_node_fulfilling_steep_1_conditions(node, result, ways, attached_ways):
-        # true junction, with more than two ways
-        if len(attached_ways[node.id]) != 2:
-            return False
-
-        # self-joining way (roundabout)
-        if attached_ways[node.id][0] == attached_ways[node.id][1]:
-            return False
-
-        way_a = ways[attached_ways[node.id][0]]
-        way_b = ways[attached_ways[node.id][1]]
-        if way_a[0] == node.id or way_a[-1] == node.id:
-            if way_b[0] == node.id or way_b[-1] == node.id:
-                if way_b[0] in way_a and way_b[-1] in way_a:
-                    # cycle would be created
-                    return False
-                if way_a[0] in way_b and way_a[-1] in way_b:
-                    # cycle would be created
-                    return False
-                return True
-        return False
-
-    @staticmethod
     def edit_loaded_data(result):
         pp = pprint.PrettyPrinter(indent=4)
         # pp.pprint(result.ways)
@@ -271,6 +248,29 @@ class ConverterNormalizer(object):
         #pp.pprint(remade_result.ways)
         #pp.pprint(remade_result.nodes)
         return remade_result
+
+    @staticmethod
+    def is_this_node_fulfilling_steep_1_conditions(node, result, ways, attached_ways):
+        # true junction, with more than two ways
+        if len(attached_ways[node.id]) != 2:
+            return False
+
+        # self-joining way (roundabout)
+        if attached_ways[node.id][0] == attached_ways[node.id][1]:
+            return False
+
+        way_a = ways[attached_ways[node.id][0]]
+        way_b = ways[attached_ways[node.id][1]]
+        if way_a[0] == node.id or way_a[-1] == node.id:
+            if way_b[0] == node.id or way_b[-1] == node.id:
+                if way_b[0] in way_a and way_b[-1] in way_a:
+                    # cycle would be created
+                    return False
+                if way_a[0] in way_b and way_a[-1] in way_b:
+                    # cycle would be created
+                    return False
+                return True
+        return False
 
     @staticmethod
     def remade_node(node, belongs_to_result):

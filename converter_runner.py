@@ -74,10 +74,11 @@ def binary_search_for_problems(latitudeSouth, longitudeWest, latitudeNorth, long
 if __name__ == "__main__":
     latitudeSouth, longitudeWest, latitudeNorth, longitudeEast = sys.argv[1], sys.argv[2], sys.argv[3], sys.argv[4]
     result, query = get_data(latitudeSouth, longitudeWest, latitudeNorth, longitudeEast)
-    converter_reader = ConverterReader(query)
-    converter_reader.read_to_internal_structure(result)
-    ConverterPrinter.print_to_file(sys.argv[5], converter_reader.gateways, converter_reader.junctions,
-                                   converter_reader.ways)
+    if result != None:
+        converter_reader = ConverterReader(query)
+        converter_reader.read_to_internal_structure(result)
+        ConverterPrinter.print_to_file(sys.argv[5], converter_reader.gateways, converter_reader.junctions,
+                                       converter_reader.ways)
     generate_minimal_test_case_if_errors_are_present(latitudeSouth, longitudeWest, latitudeNorth, longitudeEast)
 
     # for way in result.ways:

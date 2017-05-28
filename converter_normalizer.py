@@ -53,6 +53,8 @@ class ConverterNormalizer(object):
 
     @staticmethod
     def validate_returned_data(result):
+        if result == None:
+            raise ConverterNormalizer.ConversionFailed("normalizator crashed during generation")
         ConverterNormalizer.only_one_way_between_nodes(result)
         ConverterNormalizer.each_way_connects_two_nodes(result)
         ConverterNormalizer.no_nodes_on_exactly_two_ways(result)
@@ -101,32 +103,34 @@ class ConverterNormalizer(object):
 
     @staticmethod
     def edit_loaded_data(result):
-        while True:
-            # transfer data to structure that allows editing
-            lowest_available_way_id = 1
+        try:
+            while True:
+                # transfer data to structure that allows editing
+                lowest_available_way_id = 1
 
-            # dictionary indexed by way id, entries are list of nodes that form the way
-            ways = {}
+                # dictionary indexed by way id, entries are list of nodes that form the way
+                ways = {}
 
-            for way in result.ways:
-                nodes = way.get_nodes(resolve_missing=False)
-                list_of_nodes = []
-                for node in nodes:
-                    list_of_nodes += [node.id]
-                ways[way.id] = list_of_nodes
-                if lowest_available_way_id <= way.id:
-                    lowest_available_way_id = way.id + 1
+                for way in result.ways:
+                    nodes = way.get_nodes(resolve_missing=False)
+                    list_of_nodes = []
+                    for node in nodes:
+                        list_of_nodes += [node.id]
+                    ways[way.id] = list_of_nodes
+                    if lowest_available_way_id <= way.id:
+                        lowest_available_way_id = way.id + 1
 
-            # indexed by nodes, entries are lists of way ids passing through a given node
-            ways, lowest_available_way_id = ConverterNormalizer.join_ways(result.nodes, ways, lowest_available_way_id)
-            ways, lowest_available_way_id = ConverterNormalizer.remove_nodes_that_are_not_affecting_topology(result.nodes, ways, lowest_available_way_id)
-            ways, lowest_available_way_id = ConverterNormalizer.remove_zero_length_parts(ways, lowest_available_way_id)
-            result, ways, lowest_available_way_id = ConverterNormalizer.split_ways_on_crossings(result, ways, lowest_available_way_id)
-            result, removed_ways_count = ConverterNormalizer.generate_new_result_from_ways_structure(result, ways, lowest_available_way_id)
-            # with nonzero removed ways it is possible that one of unwanted situations appeared again
-            if removed_ways_count == 0:
-                break
-
+                # indexed by nodes, entries are lists of way ids passing through a given node
+                ways, lowest_available_way_id = ConverterNormalizer.join_ways(result.nodes, ways, lowest_available_way_id)
+                ways, lowest_available_way_id = ConverterNormalizer.remove_nodes_that_are_not_affecting_topology(result.nodes, ways, lowest_available_way_id)
+                ways, lowest_available_way_id = ConverterNormalizer.remove_zero_length_parts(ways, lowest_available_way_id)
+                result, ways, lowest_available_way_id = ConverterNormalizer.split_ways_on_crossings(result, ways, lowest_available_way_id)
+                result, removed_ways_count = ConverterNormalizer.generate_new_result_from_ways_structure(result, ways, lowest_available_way_id)
+                # with nonzero removed ways it is possible that one of unwanted situations appeared again
+                if removed_ways_count == 0:
+                    break
+        except KeyError:
+            return None
         return result
 
     @staticmethod

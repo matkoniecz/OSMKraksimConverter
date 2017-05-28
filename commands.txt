@@ -2,6 +2,7 @@ python converter_runner.py latitudeSouth, longitudeWest, latitudeNorth, longitud
 
 Kraków:
 python converter_runner.py 50.045191 19.908397 50.078581 19.983928 krakow
+python converter_runner.py 50.05 19.91 50.07 19.98 krakow_maly
 
 other for tests:
 python converter_runner.py  49.7952   23.9691  49.8795   24.1092 lwow

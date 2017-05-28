@@ -120,6 +120,7 @@ class ConverterNormalizer(object):
             # indexed by nodes, entries are lists of way ids passing through a given node
             result, ways, lowest_available_way_id = ConverterNormalizer.join_ways(result, ways, lowest_available_way_id)
             result, ways, lowest_available_way_id = ConverterNormalizer.remove_nodes_that_are_not_affecting_topology(result, ways, lowest_available_way_id)
+            result, ways, lowest_available_way_id = ConverterNormalizer.remove_zero_length_parts(result, ways, lowest_available_way_id)
             result, ways, lowest_available_way_id = ConverterNormalizer.split_ways_on_crossings(result, ways, lowest_available_way_id)
             result, removed_ways_count = ConverterNormalizer.generate_new_result_from_ways_structure(result, ways, lowest_available_way_id)
             # with nonzero removed ways it is possible that one of unwanted situations appeared again
@@ -194,6 +195,18 @@ class ConverterNormalizer(object):
                     # Way structure after it is created)
                     ways[way_id].remove(node.id)
         return result, ways, lowest_available_way_id
+
+    @staticmethod
+    def remove_zero_length_parts(result, ways, lowest_available_way_id):
+        # if way has two the same ids after each other it means that either way was self-looping or that OSM data was broken
+        # in both cases one of duplicated ids may be removed
+        for way_id, nodes_list in ways.items():
+            for index, node_id in enumerate(nodes_list):
+                if index > 0:
+                    if nodes_list[index] == nodes_list[index-1]:
+                        del nodes_list[index]
+        return result, ways, lowest_available_way_id
+
 
     @staticmethod
     def split_ways_on_crossings(result, ways, lowest_available_way_id):

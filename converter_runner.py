@@ -1,3 +1,4 @@
+# coding=UTF8
 import sys
 from converter_printer import ConverterPrinter
 from query_loader import ConverterQueryLoader
@@ -38,25 +39,32 @@ def generate_minimal_test_case_if_errors_are_present(latitudeSouth, longitudeWes
 def binary_search_for_problems(latitudeSouth, longitudeWest, latitudeNorth, longitudeEast):
     latitudeMiddle = (latitudeSouth + latitudeNorth) / 2
     longitudeMiddle = (longitudeWest + longitudeEast) / 2
+    latitude_delta = latitudeNorth - latitudeSouth
+    longitude_delta = longitudeEast - longitudeWest
+
+    print "Δlatitude = " + str(latitude_delta)
+    print "Δlongitude = " + str(longitude_delta)
+
+    epsilon = 1.0/10/1000
 
     # bottom-left quadrant
     result, _ = get_data(latitudeSouth, longitudeWest, latitudeMiddle, longitudeMiddle)
-    if is_normalization_failed(result):
+    if latitude_delta > epsilon and is_normalization_failed(result):
         return binary_search_for_problems(latitudeSouth, longitudeWest, latitudeMiddle, longitudeMiddle)
 
     # upper-left quadrant
     result, _ = get_data(latitudeMiddle, longitudeWest, latitudeNorth, longitudeMiddle)
-    if is_normalization_failed(result):
+    if longitude_delta > epsilon and is_normalization_failed(result):
         return binary_search_for_problems(latitudeMiddle, longitudeWest, latitudeNorth, longitudeMiddle)
 
     # bottom-right quadrant
     result, _ = get_data(latitudeSouth, longitudeMiddle, latitudeMiddle, longitudeEast)
-    if is_normalization_failed(result):
+    if latitude_delta > epsilon and is_normalization_failed(result):
         return binary_search_for_problems(latitudeSouth, longitudeMiddle, latitudeMiddle, longitudeEast)
 
     # upper-right quadrant
     result, _ = get_data(latitudeMiddle, longitudeMiddle, latitudeNorth, longitudeEast)
-    if is_normalization_failed(result):
+    if longitude_delta > epsilon and is_normalization_failed(result):
         return binary_search_for_problems(latitudeMiddle, longitudeMiddle, latitudeNorth, longitudeEast)
 
     coords = str(latitudeSouth) + ' ' + str(longitudeWest) + ' ' + str(latitudeNorth) + ' ' + str(longitudeEast)

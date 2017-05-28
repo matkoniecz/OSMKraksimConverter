@@ -67,9 +67,31 @@ def binary_search_for_problems(latitudeSouth, longitudeWest, latitudeNorth, long
     if longitude_delta > epsilon and is_normalization_failed(result):
         return binary_search_for_problems(latitudeMiddle, longitudeMiddle, latitudeNorth, longitudeEast)
 
+    anonunce_completion_of_binary_search(latitudeSouth, longitudeWest, latitudeNorth, longitudeEast)
+
+def anonunce_completion_of_binary_search(latitudeSouth, longitudeWest, latitudeNorth, longitudeEast):
     coords = str(latitudeSouth) + ' ' + str(longitudeWest) + ' ' + str(latitudeNorth) + ' ' + str(longitudeEast)
     print 'following areas is smallest found by binary search: ' + coords
-    print str(Query(latitudeSouth, longitudeWest, latitudeNorth, longitudeEast))
+    result, query = download_data(latitudeSouth, longitudeWest, latitudeNorth, longitudeEast)
+    print str(query)
+    ways, _ = ConverterNormalizer.build_ways_from_query_data(result, 1)
+
+    nodes = []
+    print '    def test_name(self):'
+    print '        result = Result(elements=[], api=None)'
+    for way_id, node_list in ways.items():
+        nodes_in_way = '['
+        for node_id in node_list:
+            nodes_in_way += str(node_id) + ', '
+            if node_id not in nodes:
+                nodes.append(node_id)
+                print '        node = Node(node_id=' + str(node_id) + ', lat=1, lon=1, attributes={},result=result)'
+                print '        result.append(node)'
+        nodes_in_way += ']'
+        print '        way = Way(way_id=' + str(way_id) + ',center_lat=1,center_lon=1,node_ids='+nodes_in_way+',attributes={},result=result)'
+        print '        result.append(way)'
+    print '        ConverterNormalizer.validate_returned_data(ConverterNormalizer.simplify_loaded_data(result))'
+
 
 if __name__ == "__main__":
     latitudeSouth, longitudeWest, latitudeNorth, longitudeEast = sys.argv[1], sys.argv[2], sys.argv[3], sys.argv[4]

@@ -10,7 +10,7 @@ class ConverterNormalizer(object):
     step 1) all ways that are joining at junctions formed by exactly two roads are merged
     step 2) all nodes that are sitting on one road not at the end - thrown away
 
-    now all connections between junctions are single steep
+    now all connections between junctions are single step
 
     step 3) split all ways with more than two nodes into separate ways
     now all connection between junction are ways without nodes in the middle
@@ -135,7 +135,7 @@ class ConverterNormalizer(object):
         # as additional condition: these two ways are different ways (self-joining ways may appear at roundabouts)
         # such ways may be safely merged
         for node in result.nodes:
-            if ConverterNormalizer.is_this_node_fulfilling_steep_1_conditions(node, result, ways, attached_ways):
+            if ConverterNormalizer.is_this_node_fulfilling_step_1_conditions(node, result, ways, attached_ways):
                 way_a = ways[attached_ways[node.id][0]]
                 way_b = ways[attached_ways[node.id][1]]
                 # both ways end at a given node
@@ -264,7 +264,7 @@ class ConverterNormalizer(object):
         return remade_result, ways, attached_ways, lowest_available_way_id
 
     @staticmethod
-    def is_this_node_fulfilling_steep_1_conditions(node, result, ways, attached_ways):
+    def is_this_node_fulfilling_step_1_conditions(node, result, ways, attached_ways):
         # true junction, with more than two ways
         if len(attached_ways[node.id]) != 2:
             return False

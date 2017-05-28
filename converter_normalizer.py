@@ -244,6 +244,9 @@ class ConverterNormalizer(object):
 
         unique_ids = set()
         for way_id, nodes_list in ways.items():
+            # node_a to node_b, node_b to node_a are considered the same by Kraksim
+            if nodes_list[0] < nodes_list[1]:
+                nodes_list = nodes_list[::-1]
             kraksim_id = str(nodes_list[0]) + str(nodes_list[1])
             if not kraksim_id in unique_ids:
                 unique_ids.add(kraksim_id)

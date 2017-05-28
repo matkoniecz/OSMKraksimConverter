@@ -101,31 +101,33 @@ class ConverterNormalizer(object):
 
     @staticmethod
     def edit_loaded_data(result):
-        pp = pprint.PrettyPrinter(indent=4)
-        # pp.pprint(result.ways)
+        while True:
+            # transfer data to structure that allows editing
+            lowest_available_way_id = 1
 
-        # transfer data to structure that allows editing
-        lowest_available_way_id = 1
+            # dictionary indexed by way id, entries are list of nodes that form the way
+            ways = {}
 
-        # dictionary indexed by way id, entries are list of nodes that form the way
-        ways = {}
+            for way in result.ways:
+                nodes = way.get_nodes(resolve_missing=False)
+                list_of_nodes = []
+                for node in nodes:
+                    list_of_nodes += [node.id]
+                ways[way.id] = list_of_nodes
+                if lowest_available_way_id <= way.id:
+                    lowest_available_way_id = way.id + 1
 
-        for way in result.ways:
-            nodes = way.get_nodes(resolve_missing=False)
-            list_of_nodes = []
-            for node in nodes:
-                list_of_nodes += [node.id]
-            ways[way.id] = list_of_nodes
-            if lowest_available_way_id <= way.id:
-                lowest_available_way_id = way.id + 1
+            # indexed by nodes, entries are lists of way ids passing through a given node
+            attached_ways = ConverterNormalizer.calculate_attached_ways(ways)
 
-        # indexed by nodes, entries are lists of way ids passing through a given node
-        attached_ways = ConverterNormalizer.calculate_attached_ways(ways)
+            result, ways, attached_ways, lowest_available_way_id = ConverterNormalizer.join_ways(result, ways, attached_ways, lowest_available_way_id)
+            result, ways, attached_ways, lowest_available_way_id = ConverterNormalizer.remove_nodes_that_are_not_affecting_topology(result, ways, attached_ways, lowest_available_way_id)
+            result, ways, attached_ways, lowest_available_way_id = ConverterNormalizer.split_ways_on_crossings(result, ways, attached_ways, lowest_available_way_id)
+            result, removed_ways_count = ConverterNormalizer.generate_new_result_from_ways_structure(result, ways, attached_ways, lowest_available_way_id)
+            # with nonzero removed ways it is possible that one of unwanted situations appeared again
+            if removed_ways_count == 0:
+                break
 
-        result, ways, attached_ways, lowest_available_way_id = ConverterNormalizer.join_ways(result, ways, attached_ways, lowest_available_way_id)
-        result, ways, attached_ways, lowest_available_way_id = ConverterNormalizer.remove_nodes_that_are_not_affecting_topology(result, ways, attached_ways, lowest_available_way_id)
-        result, ways, attached_ways, lowest_available_way_id = ConverterNormalizer.split_ways_on_crossings(result, ways, attached_ways, lowest_available_way_id)
-        result, ways, attached_ways, lowest_available_way_id = ConverterNormalizer.generate_new_result_from_ways_structure(result, ways, attached_ways, lowest_available_way_id)
         return result
 
     @staticmethod
@@ -242,20 +244,24 @@ class ConverterNormalizer(object):
         for id in nodes_left:
             remade_result.append(result.get_node(id))
 
+        removed_ways_count = 0
+
         unique_ids = set()
         for way_id, nodes_list in ways.items():
             # node_a to node_b, node_b to node_a are considered the same by Kraksim
             if nodes_list[0] < nodes_list[1]:
                 nodes_list = nodes_list[::-1]
             kraksim_id = str(nodes_list[0]) + str(nodes_list[1])
-            if not kraksim_id in unique_ids:
+            if kraksim_id in unique_ids:
+                removed_ways_count += 1
+            else:
                 unique_ids.add(kraksim_id)
                 base_way = result.get_way(way_id)
                 remade_way = ConverterNormalizer.remade_way(
                     base_way, remade_result, nodes_list)
                 remade_result.append(remade_way)
 
-        return remade_result, ways, attached_ways, lowest_available_way_id
+        return remade_result, removed_ways_count
 
     @staticmethod
     def is_this_node_fulfilling_step_1_conditions(node, result, ways, attached_ways):

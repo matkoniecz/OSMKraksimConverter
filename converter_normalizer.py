@@ -203,8 +203,8 @@ class ConverterNormalizer(object):
         for way_id, nodes_list in ways.items():
             free_nodes = []
             for index, node_id in enumerate(nodes_list):
-                # do not split at start on end where way terminates
                 free_nodes.append(node_id)
+                # do not split at start on end where way terminates
                 if node_id == nodes_list[0]:
                     continue
                 if node_id == nodes_list[-1]:

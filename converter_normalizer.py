@@ -118,12 +118,10 @@ class ConverterNormalizer(object):
                     lowest_available_way_id = way.id + 1
 
             # indexed by nodes, entries are lists of way ids passing through a given node
-            attached_ways = ConverterNormalizer.calculate_attached_ways(ways)
-
-            result, ways, attached_ways, lowest_available_way_id = ConverterNormalizer.join_ways(result, ways, attached_ways, lowest_available_way_id)
-            result, ways, attached_ways, lowest_available_way_id = ConverterNormalizer.remove_nodes_that_are_not_affecting_topology(result, ways, attached_ways, lowest_available_way_id)
-            result, ways, attached_ways, lowest_available_way_id = ConverterNormalizer.split_ways_on_crossings(result, ways, attached_ways, lowest_available_way_id)
-            result, removed_ways_count = ConverterNormalizer.generate_new_result_from_ways_structure(result, ways, attached_ways, lowest_available_way_id)
+            result, ways, lowest_available_way_id = ConverterNormalizer.join_ways(result, ways, lowest_available_way_id)
+            result, ways, lowest_available_way_id = ConverterNormalizer.remove_nodes_that_are_not_affecting_topology(result, ways, lowest_available_way_id)
+            result, ways, lowest_available_way_id = ConverterNormalizer.split_ways_on_crossings(result, ways, lowest_available_way_id)
+            result, removed_ways_count = ConverterNormalizer.generate_new_result_from_ways_structure(result, ways, lowest_available_way_id)
             # with nonzero removed ways it is possible that one of unwanted situations appeared again
             if removed_ways_count == 0:
                 break
@@ -131,7 +129,8 @@ class ConverterNormalizer(object):
         return result
 
     @staticmethod
-    def join_ways(result, ways, attached_ways, lowest_available_way_id):
+    def join_ways(result, ways, lowest_available_way_id):
+        attached_ways = ConverterNormalizer.calculate_attached_ways(ways)
         # step 1
         # find pair of ways that both end at the same node, and the node is touching only these two ways
         # as additional condition: these two ways are different ways (self-joining ways may appear at roundabouts)
@@ -174,14 +173,11 @@ class ConverterNormalizer(object):
 
                 # merge second way into the first
                 ways[attached_ways[node.id][0]] += way_b
-
-                # recalculate, as way deletion
-                # makes part of data invalid
-                attached_ways = ConverterNormalizer.calculate_attached_ways(ways)
-        return result, ways, attached_ways, lowest_available_way_id
+        return result, ways, lowest_available_way_id
 
     @staticmethod
-    def remove_nodes_that_are_not_affecting_topology(result, ways, attached_ways, lowest_available_way_id):
+    def remove_nodes_that_are_not_affecting_topology(result, ways, lowest_available_way_id):
+        attached_ways = ConverterNormalizer.calculate_attached_ways(ways)
         # step 2
         for node in result.nodes:
             if len(attached_ways[node.id]) == 1:
@@ -197,10 +193,11 @@ class ConverterNormalizer(object):
                     # recreate way (I see no support for modification of
                     # Way structure after it is created)
                     ways[way_id].remove(node.id)
-        return result, ways, attached_ways, lowest_available_way_id
+        return result, ways, lowest_available_way_id
 
     @staticmethod
-    def split_ways_on_crossings(result, ways, attached_ways, lowest_available_way_id):
+    def split_ways_on_crossings(result, ways, lowest_available_way_id):
+        attached_ways = ConverterNormalizer.calculate_attached_ways(ways)
         # step 3
         new_ways = []
         for way_id, nodes_list in ways.items():
@@ -231,10 +228,10 @@ class ConverterNormalizer(object):
             ways[lowest_available_way_id] = new_way["nodes"]
             lowest_available_way_id += 1
 
-        return result, ways, attached_ways, lowest_available_way_id
+        return result, ways, lowest_available_way_id
 
     @staticmethod
-    def generate_new_result_from_ways_structure(result, ways, attached_ways, lowest_available_way_id):
+    def generate_new_result_from_ways_structure(result, ways, lowest_available_way_id):
         remade_result = Result(elements=[], api=None)
         nodes_left = set()
         for way_id, nodes_list in ways.items():

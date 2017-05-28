@@ -140,7 +140,7 @@ class ConverterNormalizer(object):
                 # with nonzero removed ways it is possible that one of unwanted situations appeared again
                 if removed_ways_count == 0:
                     break
-        except KeyError, error:
+        except Exception, error:
             print error
             print traceback.format_exc()
             return None

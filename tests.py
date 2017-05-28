@@ -488,5 +488,19 @@ class TestStringMethods(unittest.TestCase):
         self.failUnlessRaises(ConverterNormalizer.ConversionFailed, ConverterNormalizer.no_nodes_on_exactly_two_ways, result)
         ConverterNormalizer.validate_returned_data(ConverterNormalizer.simplify_loaded_data(result))
 
+    def test_crash_regression(self):
+        result = Result(elements=[], api=None)
+        node = Node(node_id=251680825, lat=1, lon=1, attributes={},result=result)
+        result.append(node)
+        node = Node(node_id=30372051, lat=1, lon=1, attributes={},result=result)
+        result.append(node)
+        node = Node(node_id=1924449568, lat=1, lon=1, attributes={},result=result)
+        result.append(node)
+        node = Node(node_id=1325756454, lat=1, lon=1, attributes={},result=result)
+        result.append(node)
+        way = Way(way_id=216999581,center_lat=1,center_lon=1,node_ids=[30372051, 1325756454, 251680825],attributes={},result=result)
+        result.append(way)
+        ConverterNormalizer.validate_returned_data(ConverterNormalizer.simplify_loaded_data(result))
+
 if __name__ == '__main__':
     unittest.main()

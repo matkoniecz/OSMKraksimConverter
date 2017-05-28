@@ -243,24 +243,15 @@ class ConverterNormalizer(object):
             remade_result.append(result.get_node(id))
 
         unique_ids = set()
-        kicked_1 = 0
-        kicked_2 = 0
-        all_1 = 0
-        all_2 = 0
         for way_id, nodes_list in ways.items():
             kraksim_id = str(nodes_list[0]) + str(nodes_list[1])
-            all_1 += 1
-            if kraksim_id in unique_ids:
-                kicked_1 += 1
-            else:
+            if not kraksim_id in unique_ids:
                 unique_ids.add(kraksim_id)
                 base_way = result.get_way(way_id)
                 remade_way = ConverterNormalizer.remade_way(
                     base_way, remade_result, nodes_list)
                 remade_result.append(remade_way)
 
-        #pp.pprint(remade_result.ways)
-        #pp.pprint(remade_result.nodes)
         return remade_result, ways, attached_ways, lowest_available_way_id
 
     @staticmethod

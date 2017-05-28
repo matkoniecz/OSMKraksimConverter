@@ -118,9 +118,9 @@ class ConverterNormalizer(object):
                     lowest_available_way_id = way.id + 1
 
             # indexed by nodes, entries are lists of way ids passing through a given node
-            result, ways, lowest_available_way_id = ConverterNormalizer.join_ways(result, ways, lowest_available_way_id)
-            result, ways, lowest_available_way_id = ConverterNormalizer.remove_nodes_that_are_not_affecting_topology(result, ways, lowest_available_way_id)
-            result, ways, lowest_available_way_id = ConverterNormalizer.remove_zero_length_parts(result, ways, lowest_available_way_id)
+            ways, lowest_available_way_id = ConverterNormalizer.join_ways(result.nodes, ways, lowest_available_way_id)
+            ways, lowest_available_way_id = ConverterNormalizer.remove_nodes_that_are_not_affecting_topology(result.nodes, ways, lowest_available_way_id)
+            ways, lowest_available_way_id = ConverterNormalizer.remove_zero_length_parts(ways, lowest_available_way_id)
             result, ways, lowest_available_way_id = ConverterNormalizer.split_ways_on_crossings(result, ways, lowest_available_way_id)
             result, removed_ways_count = ConverterNormalizer.generate_new_result_from_ways_structure(result, ways, lowest_available_way_id)
             # with nonzero removed ways it is possible that one of unwanted situations appeared again
@@ -130,14 +130,14 @@ class ConverterNormalizer(object):
         return result
 
     @staticmethod
-    def join_ways(result, ways, lowest_available_way_id):
+    def join_ways(nodes, ways, lowest_available_way_id):
         attached_ways = ConverterNormalizer.calculate_attached_ways(ways)
         # step 1
         # find pair of ways that both end at the same node, and the node is touching only these two ways
         # as additional condition: these two ways are different ways (self-joining ways may appear at roundabouts)
         # such ways may be safely merged
-        for node in result.nodes:
-            if ConverterNormalizer.is_this_node_fulfilling_step_1_conditions(node, result, ways, attached_ways):
+        for node in nodes:
+            if ConverterNormalizer.is_this_node_fulfilling_step_1_conditions(node, ways, attached_ways):
                 way_a = ways[attached_ways[node.id][0]]
                 way_b = ways[attached_ways[node.id][1]]
                 # both ways end at a given node
@@ -174,13 +174,13 @@ class ConverterNormalizer(object):
 
                 # merge second way into the first
                 ways[attached_ways[node.id][0]] += way_b
-        return result, ways, lowest_available_way_id
+        return ways, lowest_available_way_id
 
     @staticmethod
-    def remove_nodes_that_are_not_affecting_topology(result, ways, lowest_available_way_id):
+    def remove_nodes_that_are_not_affecting_topology(nodes, ways, lowest_available_way_id):
         attached_ways = ConverterNormalizer.calculate_attached_ways(ways)
         # step 2
-        for node in result.nodes:
+        for node in nodes:
             if len(attached_ways[node.id]) == 1:
                 # node is on the exactly one way
                 way_id = attached_ways[node.id][0]
@@ -194,10 +194,10 @@ class ConverterNormalizer(object):
                     # recreate way (I see no support for modification of
                     # Way structure after it is created)
                     ways[way_id].remove(node.id)
-        return result, ways, lowest_available_way_id
+        return ways, lowest_available_way_id
 
     @staticmethod
-    def remove_zero_length_parts(result, ways, lowest_available_way_id):
+    def remove_zero_length_parts(ways, lowest_available_way_id):
         # if way has two the same ids after each other it means that either way was self-looping or that OSM data was broken
         # in both cases one of duplicated ids may be removed
         for way_id, nodes_list in ways.items():
@@ -205,7 +205,7 @@ class ConverterNormalizer(object):
                 if index > 0:
                     if nodes_list[index] == nodes_list[index-1]:
                         del nodes_list[index]
-        return result, ways, lowest_available_way_id
+        return ways, lowest_available_way_id
 
 
     @staticmethod
@@ -274,7 +274,7 @@ class ConverterNormalizer(object):
         return remade_result, removed_ways_count
 
     @staticmethod
-    def is_this_node_fulfilling_step_1_conditions(node, result, ways, attached_ways):
+    def is_this_node_fulfilling_step_1_conditions(node, ways, attached_ways):
         # true junction, with more than two ways
         if len(attached_ways[node.id]) != 2:
             return False

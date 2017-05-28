@@ -488,7 +488,7 @@ class TestStringMethods(unittest.TestCase):
         self.failUnlessRaises(ConverterNormalizer.ConversionFailed, ConverterNormalizer.no_nodes_on_exactly_two_ways, result)
         ConverterNormalizer.validate_returned_data(ConverterNormalizer.simplify_loaded_data(result))
 
-    def test_crash_regression(self):
+    def test_crash_on_isolated_node(self):
         result = Result(elements=[], api=None)
         node = Node(node_id=251680825, lat=1, lon=1, attributes={},result=result)
         result.append(node)

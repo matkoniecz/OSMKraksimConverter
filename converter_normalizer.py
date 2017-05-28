@@ -122,14 +122,14 @@ class ConverterNormalizer(object):
         # indexed by nodes, entries are lists of way ids passing through a given node
         attached_ways = ConverterNormalizer.calculate_attached_ways(ways)
 
-        result, ways, attached_ways, lowest_available_way_id = ConverterNormalizer.make_step_1(result, ways, attached_ways, lowest_available_way_id)
-        result, ways, attached_ways, lowest_available_way_id = ConverterNormalizer.make_step_2(result, ways, attached_ways, lowest_available_way_id)
-        result, ways, attached_ways, lowest_available_way_id = ConverterNormalizer.make_step_3(result, ways, attached_ways, lowest_available_way_id)
+        result, ways, attached_ways, lowest_available_way_id = ConverterNormalizer.join_ways(result, ways, attached_ways, lowest_available_way_id)
+        result, ways, attached_ways, lowest_available_way_id = ConverterNormalizer.remove_nodes_that_are_not_affecting_topology(result, ways, attached_ways, lowest_available_way_id)
+        result, ways, attached_ways, lowest_available_way_id = ConverterNormalizer.split_ways_on_crossings(result, ways, attached_ways, lowest_available_way_id)
         result, ways, attached_ways, lowest_available_way_id = ConverterNormalizer.generate_new_result_from_ways_structure(result, ways, attached_ways, lowest_available_way_id)
         return result
 
     @staticmethod
-    def make_step_1(result, ways, attached_ways, lowest_available_way_id):
+    def join_ways(result, ways, attached_ways, lowest_available_way_id):
         # step 1
         # find pair of ways that both end at the same node, and the node is touching only these two ways
         # as additional condition: these two ways are different ways (self-joining ways may appear at roundabouts)
@@ -179,7 +179,7 @@ class ConverterNormalizer(object):
         return result, ways, attached_ways, lowest_available_way_id
 
     @staticmethod
-    def make_step_2(result, ways, attached_ways, lowest_available_way_id):
+    def remove_nodes_that_are_not_affecting_topology(result, ways, attached_ways, lowest_available_way_id):
         # step 2
         for node in result.nodes:
             if len(attached_ways[node.id]) == 1:
@@ -198,7 +198,7 @@ class ConverterNormalizer(object):
         return result, ways, attached_ways, lowest_available_way_id
 
     @staticmethod
-    def make_step_3(result, ways, attached_ways, lowest_available_way_id):
+    def split_ways_on_crossings(result, ways, attached_ways, lowest_available_way_id):
         # step 3
         new_ways = []
         for way_id, nodes_list in ways.items():

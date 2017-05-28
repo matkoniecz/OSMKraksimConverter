@@ -201,9 +201,10 @@ class TestStringMethods(unittest.TestCase):
         result = ConverterNormalizer.simplify_loaded_data(result)
         ConverterNormalizer.validate_returned_data(result)
 
-        self.assertEqual(len(result.ways), 3)
+        expected_way_count = 3
+        self.assertEqual(len(result.ways), expected_way_count)
         self.assertEqual(len(result.nodes), 4)
-        for i in range(3):
+        for i in range(expected_way_count):
             self.assertEqual(len(result.ways[i].get_nodes()), 2)
         # TODO check topology
 
@@ -303,9 +304,10 @@ class TestStringMethods(unittest.TestCase):
         result = ConverterNormalizer.simplify_loaded_data(result)
         ConverterNormalizer.validate_returned_data(result)
 
-        self.assertEqual(len(result.ways), 1)
+        expected_way_count = 1
+        self.assertEqual(len(result.ways), expected_way_count)
         self.assertEqual(len(result.nodes), 2)
-        for i in range(3):
+        for i in range(expected_way_count):
             self.assertEqual(len(result.ways[i].get_nodes()), 2)
         # TODO check topology
 

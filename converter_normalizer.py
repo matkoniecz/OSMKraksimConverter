@@ -122,12 +122,14 @@ class ConverterNormalizer(object):
         # indexed by nodes, entries are lists of way ids passing through a given node
         attached_ways = ConverterNormalizer.calculate_attached_ways(ways)
 
-        result, ways, attached_ways, lowest_available_way_id = ConverterNormalizer.make_all_steps(result, ways, attached_ways, lowest_available_way_id)
-
+        result, ways, attached_ways, lowest_available_way_id = ConverterNormalizer.make_step_1(result, ways, attached_ways, lowest_available_way_id)
+        result, ways, attached_ways, lowest_available_way_id = ConverterNormalizer.make_step_2(result, ways, attached_ways, lowest_available_way_id)
+        result, ways, attached_ways, lowest_available_way_id = ConverterNormalizer.make_step_3(result, ways, attached_ways, lowest_available_way_id)
+        result, ways, attached_ways, lowest_available_way_id = ConverterNormalizer.generate_new_result_from_ways_structure(result, ways, attached_ways, lowest_available_way_id)
         return result
 
     @staticmethod
-    def make_all_steps(result, ways, attached_ways, lowest_available_way_id):
+    def make_step_1(result, ways, attached_ways, lowest_available_way_id):
         # step 1
         # find pair of ways that both end at the same node, and the node is touching only these two ways
         # as additional condition: these two ways are different ways (self-joining ways may appear at roundabouts)
@@ -174,7 +176,10 @@ class ConverterNormalizer(object):
                 # recalculate, as way deletion
                 # makes part of data invalid
                 attached_ways = ConverterNormalizer.calculate_attached_ways(ways)
+        return result, ways, attached_ways, lowest_available_way_id
 
+    @staticmethod
+    def make_step_2(result, ways, attached_ways, lowest_available_way_id):
         # step 2
         for node in result.nodes:
             if len(attached_ways[node.id]) == 1:
@@ -190,7 +195,10 @@ class ConverterNormalizer(object):
                     # recreate way (I see no support for modification of
                     # Way structure after it is created)
                     ways[way_id].remove(node.id)
+        return result, ways, attached_ways, lowest_available_way_id
 
+    @staticmethod
+    def make_step_3(result, ways, attached_ways, lowest_available_way_id):
         # step 3
         new_ways = []
         for way_id, nodes_list in ways.items():
@@ -210,13 +218,25 @@ class ConverterNormalizer(object):
                     free_nodes = [node_id]
             ways[way_id] = free_nodes
 
+        for new_way in new_ways:
+            base_way = result.get_way(new_way["parent"])
+            remade_way = ConverterNormalizer.remade_way(
+                base_way,
+                result,
+                new_way["nodes"],
+                lowest_available_way_id)
+            result.append(remade_way)
+            ways[lowest_available_way_id] = new_way["nodes"]
+            lowest_available_way_id += 1
+
+        return result, ways, attached_ways, lowest_available_way_id
+
+    @staticmethod
+    def generate_new_result_from_ways_structure(result, ways, attached_ways, lowest_available_way_id):
         remade_result = Result(elements=[], api=None)
         nodes_left = set()
         for way_id, nodes_list in ways.items():
             for node in nodes_list:
-                nodes_left.add(node)
-        for new_way in new_ways:
-            for node in new_way["nodes"]:
                 nodes_left.add(node)
 
         for id in nodes_left:
@@ -237,22 +257,6 @@ class ConverterNormalizer(object):
                 base_way = result.get_way(way_id)
                 remade_way = ConverterNormalizer.remade_way(
                     base_way, remade_result, nodes_list)
-                remade_result.append(remade_way)
-
-        for new_way in new_ways:
-            all_2 += 1
-            kraksim_id = str(new_way["nodes"][0]) + str(new_way["nodes"][1])
-            if kraksim_id in unique_ids:
-                kicked_2 += 1
-                continue
-            else:
-                base_way = result.get_way(new_way["parent"])
-                remade_way = ConverterNormalizer.remade_way(
-                    base_way,
-                    remade_result,
-                    new_way["nodes"],
-                    lowest_available_way_id)
-                lowest_available_way_id += 1
                 remade_result.append(remade_way)
 
         #pp.pprint(remade_result.ways)

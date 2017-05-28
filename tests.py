@@ -311,6 +311,60 @@ class TestStringMethods(unittest.TestCase):
             self.assertEqual(len(result.ways[i].get_nodes()), 2)
         # TODO check topology
 
+    def test_p_shaped_topology_on_single_way(self):
+        # this test possible case that caused an unexpected bug
+        # due to splitting and deduplication P shape should be reduced to single way (| shape)
+
+        result = Result(elements=[], api=None)
+        start_of_way = Node(
+            node_id=1,
+            lat=1,
+            lon=-10,
+            attributes={},
+            result=result)
+        selfjunction = Node(
+            node_id=2,
+            lat=5,
+            lon=-90,
+            attributes={},
+            result=result)
+        loop = Node(
+            node_id=4,
+            lat=3,
+            lon=-50,
+            attributes={},
+            result=result)
+
+        way = Way(
+            way_id=1,
+            center_lat=3,
+            center_lon=-50,
+            node_ids=[start_of_way.id,
+                      selfjunction.id,
+                      loop.id,
+                      selfjunction.id,],
+            attributes={},
+            result=result)
+
+        result.append(start_of_way)
+        result.append(selfjunction)
+        result.append(loop)
+        result.append(selfjunction)
+        result.append(way)
+
+        self.assertEqual(len(result.ways), 1)
+        self.assertEqual(len(result.nodes), 3)
+
+        result = ConverterNormalizer.simplify_loaded_data(result)
+        ConverterNormalizer.validate_returned_data(result)
+
+        expected_way_count = 1
+        self.assertEqual(len(result.ways), expected_way_count)
+        self.assertEqual(len(result.nodes), 2)
+        for i in range(expected_way_count):
+            self.assertEqual(len(result.ways[i].get_nodes()), 2)
+        # TODO check topology
+
     def test_selfvalidator_only_one_way_between_nodes(self):
         result = Result(elements=[], api=None)
         start = Node(node_id=1, lat=1, lon=-10, attributes={}, result=result)

@@ -102,23 +102,29 @@ class ConverterNormalizer(object):
                 raise ConverterNormalizer.ConversionFailed(error_message)
 
     @staticmethod
+    def build_ways_from_query_data(result, lowest_available_way_id):
+        # dictionary indexed by way id, entries are list of nodes that form the way
+        ways = {}
+
+        for way in result.ways:
+            nodes = way.get_nodes(resolve_missing=False)
+            list_of_nodes = []
+            for node in nodes:
+                list_of_nodes += [node.id]
+            ways[way.id] = list_of_nodes
+            if lowest_available_way_id <= way.id:
+                lowest_available_way_id = way.id + 1
+        return ways, lowest_available_way_id
+
+
+    @staticmethod
     def edit_loaded_data(result):
         try:
             while True:
-                # transfer data to structure that allows editing
                 lowest_available_way_id = 1
 
-                # dictionary indexed by way id, entries are list of nodes that form the way
-                ways = {}
-
-                for way in result.ways:
-                    nodes = way.get_nodes(resolve_missing=False)
-                    list_of_nodes = []
-                    for node in nodes:
-                        list_of_nodes += [node.id]
-                    ways[way.id] = list_of_nodes
-                    if lowest_available_way_id <= way.id:
-                        lowest_available_way_id = way.id + 1
+                # transfer data to structure that allows editing
+                ways, lowest_available_way_id = ConverterNormalizer.build_ways_from_query_data(result, lowest_available_way_id)
 
                 # indexed by nodes, entries are lists of way ids passing through a given node
                 ways, lowest_available_way_id = ConverterNormalizer.join_ways(result.nodes, ways, lowest_available_way_id)

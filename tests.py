@@ -64,6 +64,7 @@ class TestStringMethods(unittest.TestCase):
         self.assertEqual(end.lon, 50)
 
         result = ConverterNormalizer.simplify_loaded_data(result)
+        ConverterNormalizer.validate_returned_data(result)
 
         self.assertEqual(len(result.ways), 1)
         self.assertEqual(len(result.nodes), 2)
@@ -120,6 +121,7 @@ class TestStringMethods(unittest.TestCase):
         self.assertEqual(len(result.nodes), 3)
 
         result = ConverterNormalizer.simplify_loaded_data(result)
+        ConverterNormalizer.validate_returned_data(result)
 
         self.assertEqual(len(result.ways), 1)
         nodes = {}
@@ -197,6 +199,7 @@ class TestStringMethods(unittest.TestCase):
         self.assertEqual(len(result.nodes), 4)
 
         result = ConverterNormalizer.simplify_loaded_data(result)
+        ConverterNormalizer.validate_returned_data(result)
 
         self.assertEqual(len(result.ways), 3)
         self.assertEqual(len(result.nodes), 4)
@@ -232,6 +235,7 @@ class TestStringMethods(unittest.TestCase):
         self.assertEqual(len(result.ways), 2)
         self.assertEqual(len(result.nodes), 2)
         result = ConverterNormalizer.simplify_loaded_data(result)
+        ConverterNormalizer.validate_returned_data(result)
         self.assertEqual(len(result.ways), 1)
         self.assertEqual(len(result.nodes), 2)
         node_a = result.nodes[0]
@@ -297,6 +301,7 @@ class TestStringMethods(unittest.TestCase):
         self.assertEqual(len(result.nodes), 3)
 
         result = ConverterNormalizer.simplify_loaded_data(result)
+        ConverterNormalizer.validate_returned_data(result)
 
         self.assertEqual(len(result.ways), 1)
         self.assertEqual(len(result.nodes), 2)
@@ -331,6 +336,7 @@ class TestStringMethods(unittest.TestCase):
         result.append(way_b)
         #ConverterNormalizer.only_one_way_between_nodes(result)
         self.assertRaises(ConverterNormalizer.ConversionFailed, ConverterNormalizer.only_one_way_between_nodes, result)
+        ConverterNormalizer.validate_returned_data(ConverterNormalizer.simplify_loaded_data(result))
 
     def test_selfvalidator_each_way_connects_two_nodes(self):
         result = Result(elements=[], api=None)
@@ -384,6 +390,7 @@ class TestStringMethods(unittest.TestCase):
         result.append(long_way)
         result.append(short_way)
         self.failUnlessRaises(ConverterNormalizer.ConversionFailed, ConverterNormalizer.each_way_connects_two_nodes, result)
+        ConverterNormalizer.validate_returned_data(ConverterNormalizer.simplify_loaded_data(result))
 
     def test_selfvalidator_no_nodes_on_exactly_two_ways(self):
         result = Result(elements=[], api=None)
@@ -423,6 +430,7 @@ class TestStringMethods(unittest.TestCase):
             result=result)
         result.append(way_b)
         self.failUnlessRaises(ConverterNormalizer.ConversionFailed, ConverterNormalizer.no_nodes_on_exactly_two_ways, result)
+        ConverterNormalizer.validate_returned_data(ConverterNormalizer.simplify_loaded_data(result))
 
 if __name__ == '__main__':
     unittest.main()

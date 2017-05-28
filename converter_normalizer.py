@@ -191,6 +191,9 @@ class ConverterNormalizer(object):
 
                 # merge second way into the first
                 ways[attached_ways[node.id][0]] += way_b
+
+                #recalculate attached ways
+                attached_ways = ConverterNormalizer.calculate_attached_ways(ways, [node.id for node in nodes])
         return ways, lowest_available_way_id
 
     @staticmethod

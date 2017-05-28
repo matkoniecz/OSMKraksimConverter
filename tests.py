@@ -502,5 +502,23 @@ class TestStringMethods(unittest.TestCase):
         result.append(way)
         ConverterNormalizer.validate_returned_data(ConverterNormalizer.simplify_loaded_data(result))
 
+    def test_missing_attached_ways_recalculation_regression(self):
+        result = Result(elements=[], api=None)
+        node = Node(node_id=1, lat=1, lon=1, attributes={},result=result)
+        result.append(node)
+        node = Node(node_id=2, lat=1, lon=1, attributes={},result=result)
+        result.append(node)
+        node = Node(node_id=3, lat=1, lon=1, attributes={},result=result)
+        result.append(node)
+        node = Node(node_id=4, lat=1, lon=1, attributes={},result=result)
+        result.append(node)
+        way = Way(way_id=10,center_lat=1,center_lon=1,node_ids=[1, 2, ],attributes={},result=result)
+        result.append(way)
+        way = Way(way_id=11,center_lat=1,center_lon=1,node_ids=[3, 4, ],attributes={},result=result)
+        result.append(way)
+        way = Way(way_id=12,center_lat=1,center_lon=1,node_ids=[4, 1, ],attributes={},result=result)
+        result.append(way)
+        ConverterNormalizer.validate_returned_data(ConverterNormalizer.simplify_loaded_data(result))
+
 if __name__ == '__main__':
     unittest.main()

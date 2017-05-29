@@ -520,5 +520,15 @@ class TestStringMethods(unittest.TestCase):
         result.append(way)
         ConverterNormalizer.validate_returned_data(ConverterNormalizer.simplify_loaded_data(result))
 
+    def test_roundabout_crash_regression(self):
+        result = Result(elements=[], api=None)
+        node = Node(node_id=1, lat=1, lon=1, attributes={},result=result)
+        result.append(node)
+        node = Node(node_id=2, lat=1, lon=1, attributes={},result=result)
+        result.append(node)
+        way = Way(way_id=88655958,center_lat=1,center_lon=1,node_ids=[1, 2, 1, ],attributes={},result=result)
+        result.append(way)
+        ConverterNormalizer.validate_returned_data(ConverterNormalizer.simplify_loaded_data(result))
+
 if __name__ == '__main__':
     unittest.main()

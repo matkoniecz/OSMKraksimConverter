@@ -134,8 +134,8 @@ class ConverterNormalizer(object):
                 # indexed by nodes, entries are lists of way ids passing through a given node
                 ways, lowest_available_way_id = ConverterNormalizer.join_ways(result.nodes, ways, lowest_available_way_id)
                 ways, lowest_available_way_id = ConverterNormalizer.remove_nodes_that_are_not_affecting_topology(result.nodes, ways, lowest_available_way_id)
-                ways, lowest_available_way_id = ConverterNormalizer.remove_zero_length_parts(ways, lowest_available_way_id)
                 result, ways, lowest_available_way_id = ConverterNormalizer.split_ways_on_crossings(result, ways, lowest_available_way_id)
+                ways, lowest_available_way_id = ConverterNormalizer.remove_zero_length_parts(ways, lowest_available_way_id)
                 result, removed_ways_count = ConverterNormalizer.generate_new_result_from_ways_structure(result, ways, lowest_available_way_id)
                 # with nonzero removed ways it is possible that one of unwanted situations appeared again
                 if removed_ways_count == 0:
@@ -221,6 +221,8 @@ class ConverterNormalizer(object):
         # if way has two the same ids after each other it means that either way was self-looping or that OSM data was broken
         # in both cases one of duplicated ids may be removed
         for way_id, nodes_list in ways.items():
+            if nodes_list[0] == nodes_list[-1] and len(nodes_list) == 2:
+                del ways[way_id]
             for index, node_id in enumerate(nodes_list):
                 if index > 0:
                     if nodes_list[index] == nodes_list[index-1]:

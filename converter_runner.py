@@ -27,8 +27,9 @@ def is_normalization_failed(result):
         return True
     return False
 
-def generate_minimal_test_case_if_errors_are_present(latitudeSouth, longitudeWest, latitudeNorth, longitudeEast):
-    result, _ = get_data(latitudeSouth, longitudeWest, latitudeNorth, longitudeEast)
+def generate_minimal_test_case_if_errors_are_present(result, latitudeSouth, longitudeWest, latitudeNorth, longitudeEast):
+    if result == None:
+        result, _ = get_data(latitudeSouth, longitudeWest, latitudeNorth, longitudeEast)
     latitudeSouth = float(latitudeSouth)
     longitudeWest = float(longitudeWest)
     latitudeNorth = float(latitudeNorth)
@@ -101,7 +102,7 @@ if __name__ == "__main__":
         converter_reader.read_to_internal_structure(result)
         ConverterPrinter.print_to_file(sys.argv[5], converter_reader.gateways, converter_reader.junctions,
                                        converter_reader.ways)
-    generate_minimal_test_case_if_errors_are_present(latitudeSouth, longitudeWest, latitudeNorth, longitudeEast)
+    generate_minimal_test_case_if_errors_are_present(result, latitudeSouth, longitudeWest, latitudeNorth, longitudeEast)
 
     # for way in result.ways:
     #     print("Name: %s" % way.tags.get("name", "n/a"))

@@ -49,7 +49,7 @@ def generate_traffic(file_path, gateways):
                 ET.SubElement(scheme_branch, "gateway", id=str(gateway_2.id))
 
     tree = ET.ElementTree(traffic_net)
-    tree.write(file_path + "_generator.xml", pretty_print=True)
+    tree.write(file_path + "_traffic.xml", pretty_print=True)
 
 def generate_simple_traffic(file_path, gateways):
     traffic_net = ET.Element("traffic")
@@ -70,7 +70,7 @@ def generate_simple_traffic(file_path, gateways):
             counter += 10
 
     tree = ET.ElementTree(traffic_net)
-    tree.write(file_path + "_generator.xml", pretty_print=True)
+    tree.write(file_path + "_traffic.xml", pretty_print=True)
 
 
 def print_first_block(road_net, gateways, junctions):
@@ -165,6 +165,6 @@ class ConverterPrinter:
         print 'koniec poprawiania pliku'
 
         print 'generowanie ruchu'
-        generate_simple_traffic("traffic_" + file_path, gateways)
-        correct_xml_file("traffic_" + file_path + "_generator")
+        generate_simple_traffic(file_path, gateways)
+        correct_xml_file(file_path + "_traffic")
         print 'koniec generowania ruchu'

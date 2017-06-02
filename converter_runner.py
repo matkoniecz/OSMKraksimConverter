@@ -16,8 +16,10 @@ def download_data(latitudeSouth, longitudeWest, latitudeNorth, longitudeEast):
     return result, query
 
 def get_data(latitudeSouth, longitudeWest, latitudeNorth, longitudeEast):
+    print "enter converter_runner::get_data"
     result, query = download_data(latitudeSouth, longitudeWest, latitudeNorth, longitudeEast)
     result = ConverterNormalizer.simplify_loaded_data(result)
+    print "enter converter_runner::get_data"
     return result, query
 
 def is_normalization_failed(result):

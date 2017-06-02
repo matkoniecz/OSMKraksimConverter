@@ -1,0 +1,29 @@
+1) Kraków:
+	Command:	python converter_runner.py 50.045191 19.908397 50.078581 19.983928 krakow
+	Elapsed time:	TBA
+	Result:
+
+2) Kraków mały:
+	Command:	python converter_runner.py 50.05 19.91 50.07 19.98 krakow_maly
+	Elapsed time:	TBA
+	Result:
+
+3) Lwów:
+	Command:	python converter_runner.py 49.7952 23.9691 49.8795 24.1092 lwow
+	Elapsed time:	TBA
+	Result:
+
+4) Brasilla:
+	Command:	python converter_runner.py -15.8425 -47.9358 -15.7166 -47.8118 brasilla
+	Elapsed time:	TBA
+	Result:
+
+5) Boston:
+	Command:	python converter_runner.py 42.3382 -71.0915 42.3821 -71.0156 boston
+	Elapsed time:	TBA
+	Result:
+
+6) Warszawa:
+	Command: 	python converter_runner.py 52.16374 20.90646 52.31127 21.15848 warszawa
+	Elapsed time:	TBA
+	Result:

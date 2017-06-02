@@ -124,6 +124,7 @@ class ConverterNormalizer(object):
 
     @staticmethod
     def edit_loaded_data(result):
+        print "enter converter_normalizer::edit_loaded_data"
         try:
             while True:
                 lowest_available_way_id = 1
@@ -143,7 +144,9 @@ class ConverterNormalizer(object):
         except Exception, error:
             print error
             print traceback.format_exc()
+            print "exit converter_normalizer::edit_loaded_data"
             return None
+        print "exit converter_normalizer::edit_loaded_data"
         return result
 
     @staticmethod

@@ -1,8 +1,8 @@
 1) Kraków:
 	Command:	python converter_runner.py 50.045191 19.908397 50.078581 19.983928 krakow
 	Elapsed time:	TBA
-	Result: NOT PASSED
-	Comment: Kraksim still throws errors concerning duplicate IDs and unpermitted lane actions. Refer to error log for more details.
+	Result: PASSED
+	Comment: The file is properly generated, Kraksim loads it and can run the simulation without any errors
 
 2) Kraków mały:
 	Command:	python converter_runner.py 50.05 19.91 50.07 19.98 krakow_maly
@@ -10,24 +10,34 @@
 	Result: PASSED
 	Comment: The file is properly generated, Kraksim loads it and can run the simulation without any errors
 
+2) Kraków sredni
+	Command:	python converter_runner.py 50.047149 19.907913 50.073818 19.981041 krakow_sredni
+	Elapsed time:	TBA
+	Result: PASSED
+	Comment: The file is properly generated, Kraksim loads it and can run the simulation without any errors
+
 3) Lwów:
 	Command:	python converter_runner.py 49.7952 23.9691 49.8795 24.1092 lwow
 	Elapsed time:	TBA
+ 	Result: NOT PASSED
 	Result: Exception in thread "AWT-EventQueue-0" java.lang.OutOfMemoryError: Java heap space
 
 	3a) Lwów - Kraksim optimalization is not a part of this project, the tests have been re-run on a smaller area of the city
 		Command:	python converter_runner.py 49.820298 23.985214 49.856169 24.062119 lwow_maly
 		Elapsed time:	TBA
+		Result: PASSED
 		Result: The file is properly generated, Kraksim loads it and can run the simulation without any errors
 
 4) Brasilla:
 	Command:	python converter_runner.py -15.8425 -47.9358 -15.7166 -47.8118 brasilla
 	Elapsed time:	TBA
+	Result: NOT PASSED
 	Result: Exception in thread "AWT-EventQueue-0" java.lang.OutOfMemoryError: Java heap space
 
 	4a) Brasilla - Kraksim optimalization is not a part of this project, the tests have been re-run on a smaller area of the city
 		Command:	python converter_runner.py 49.820298 23.985214 49.856169 24.062119 lwow_maly
 		Elapsed time:	TBA
+		Result: NOT PASSED
 		Result: java.io.FileNotFoundException: configuration/emergencyVehicles.properties (Too many open files)
 
 5) Boston:
@@ -39,6 +49,7 @@
 6) Warszawa:
 	Command: 	python converter_runner.py 52.16374 20.90646 52.31127 21.15848 warszawa
 	Elapsed time:	TBA
+	Result: NOT PASSED
 	Result: Caused by: java.lang.NumberFormatException: For input string: "1.5"
 	
 7) Singapur
@@ -47,6 +58,30 @@
 	7a) Brasilla - Kraksim optimalization is not a part of this project, the tests have been re-run on a smaller area of the city
 			Command:	python converter_runner.py 49.820298 23.985214 49.856169 24.062119 lwow_maly
 			Elapsed time:	TBA
+			Result: NOT PASSED
 			Result: java.io.FileNotFoundException: configuration/emergencyVehicles.properties (Too many open files)
+
+8) Lodz:
+	Command:	python converter_runner.py 51.735140 19.432411 51.777007 19.482880 lodz
+	Elapsed time:	TBA
+	Result: PASSED
+	Comment: The file is properly generated, Kraksim loads it and can run the simulation without any errors
+
+9) Wrocław:
+	Command:	python converter_runner.py 51.086736 16.991730 51.117780 17.065201 wroclaw
+	Elapsed time:	TBA
+	Result: PASSED
+	Comment: The file is properly generated, Kraksim loads it and can run the simulation without any errors
+
+10) Poznań:
+	Command:	python converter_runner.py 52.393652 16.900749 52.426742 16.967354 poznan
+	Elapsed time:	TBA
+	Result: PASSED
+	Comment: The file is properly generated, Kraksim loads it and can run the simulation without any errors
+
+
+
+
+
 
 

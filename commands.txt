@@ -3,6 +3,7 @@ python converter_runner.py latitudeSouth, longitudeWest, latitudeNorth, longitud
 Kraków:
 python converter_runner.py 50.045191 19.908397 50.078581 19.983928 krakow
 python converter_runner.py 50.05 19.91 50.07 19.98 krakow_maly
+python converter_runner.py 50.047149 19.907913 50.073818 19.981041 krakow_sredni
 
 other for tests:
 python converter_runner.py 49.7952 23.9691 49.8795 24.1092 lwow
@@ -16,4 +17,11 @@ python converter_runner.py 52.16374 20.90646 52.31127 21.15848 warszawa
 test for cities that exhausted the heap:
 python converter_runner.py 49.820298 23.985214 49.856169 24.062119 lwow_maly
 python converter_runner.py -15.844202 -47.984161 -15.722623 -47.793274 brasilla_mala
-python converter_runner.py 1.315280 103.820801 1.376374, 103.902512 singapur_maly
+python converter_runner.py 1.315280 103.820801 1.376374 103.902512 singapur_maly
+
+other polish cities for tests:
+python converter_runner.py 51.735140 19.432411 51.777007 19.482880 lodz
+python converter_runner.py 51.086736 16.991730 51.117780 17.065201 wroclaw
+python converter_runner.py 52.393652 16.900749 52.426742 16.967354 poznan
+
+

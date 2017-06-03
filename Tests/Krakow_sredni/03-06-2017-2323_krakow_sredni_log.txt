@@ -1,0 +1,39 @@
+enter converter_runner::get_data
+<union>
+                      <query type="way">
+                        <bbox-query s="50.047149" w="19.907913" n="50.073818" e="19.981041"/>
+                        <has-kv k="highway" regv="motorway|motorway_link|trunk|trunk_link|primary|primary_link|secondary|secondary_link|tertiary|tertiary_link|unclassified|residential"/>
+                      </query>
+                      <recurse type="way-node"/>
+                      <query type="relation">
+                        <bbox-query s="50.047149" w="19.907913" n="50.073818" e="19.981041"/>
+                        <has-kv k="restriction" regv="no_right_turn|no_left_turn|no_u_turn|no_straight_on|only_right_turn|only_left_turn|only_straight_on"/>
+                      </query>
+                  </union>
+                  <print />
+<overpy.Result object at 0x7f3793912a10>
+Kwerenda wykonana
+enter converter_normalizer::edit_loaded_data
+exit converter_normalizer::edit_loaded_data
+enter converter_runner::get_data
+----gateways----
+----gateways----
+koniec wykrywanie skrzyzowan
+koniec tworzenie obiektow Way i Junction
+koniec tworzenie obiektow Gateway
+koniec zapewnienie dwukierunkowosci drog z lub do gatewayow
+koniec stworzenie akcji
+koniec usuwanie niepotrzebnych akcji na bazie restrykcji wczytanych z relacji
+koniec tworzenie obiektow Rule
+wypisywanie bloku nr 1
+koniec wypisywanie bloku nr 1
+wypisywanie bloku nr 2
+koniec wypisywanie bloku nr 2
+wypisywanie bloku nr 3
+koniec wypisywanie bloku nr 3
+zapisywanie pliku
+koniec zapisywania pliku
+poprawianie pliku
+koniec poprawiania pliku
+generowanie ruchu
+koniec generowania ruchu

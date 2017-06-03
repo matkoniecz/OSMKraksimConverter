@@ -12,3 +12,8 @@ python converter_runner.py 17.9722 79.5922 17.9909 79.6107 warangal
 python converter_runner.py 1.2317 103.7921 1.3443 103.8841 singapur
 python converter_runner.py -33.9479 151.1707 -33.8751 151.2914 sydney
 python converter_runner.py 52.16374 20.90646 52.31127 21.15848 warszawa
+
+test for cities that exhausted the heap:
+python converter_runner.py 49.820298 23.985214 49.856169 24.062119 lwow_maly
+python converter_runner.py -15.844202 -47.984161 -15.722623 -47.793274 brasilla_mala
+python converter_runner.py 1.315280 103.820801 1.376374, 103.902512 singapur_maly

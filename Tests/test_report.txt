@@ -15,10 +15,20 @@
 	Elapsed time:	TBA
 	Result: Exception in thread "AWT-EventQueue-0" java.lang.OutOfMemoryError: Java heap space
 
+	3a) Lwów - Kraksim optimalization is not a part of this project, the tests have been re-run on a smaller area of the city
+		Command:	python converter_runner.py 49.820298 23.985214 49.856169 24.062119 lwow_maly
+		Elapsed time:	TBA
+		Result: The file is properly generated, Kraksim loads it and can run the simulation without any errors
+
 4) Brasilla:
 	Command:	python converter_runner.py -15.8425 -47.9358 -15.7166 -47.8118 brasilla
 	Elapsed time:	TBA
 	Result: Exception in thread "AWT-EventQueue-0" java.lang.OutOfMemoryError: Java heap space
+
+	4a) Brasilla - Kraksim optimalization is not a part of this project, the tests have been re-run on a smaller area of the city
+		Command:	python converter_runner.py 49.820298 23.985214 49.856169 24.062119 lwow_maly
+		Elapsed time:	TBA
+		Result: java.io.FileNotFoundException: configuration/emergencyVehicles.properties (Too many open files)
 
 5) Boston:
 	Command:	python converter_runner.py 42.3382 -71.0915 42.3821 -71.0156 boston
@@ -33,4 +43,10 @@
 	
 7) Singapur
 	Result: Exception in thread "AWT-EventQueue-0" java.lang.OutOfMemoryError: Java heap space
+
+	7a) Brasilla - Kraksim optimalization is not a part of this project, the tests have been re-run on a smaller area of the city
+			Command:	python converter_runner.py 49.820298 23.985214 49.856169 24.062119 lwow_maly
+			Elapsed time:	TBA
+			Result: java.io.FileNotFoundException: configuration/emergencyVehicles.properties (Too many open files)
+
 

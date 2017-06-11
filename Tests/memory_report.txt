@@ -1,0 +1,27 @@
+Singapur:
+	Gateway 	- 1646
+	Intersection 	- 4664
+	Link		- 11830
+	Roads 		- 8379
+	TOTAL		- 26519
+
+Lwów:
+	Gateway 	- 758	
+	Intersection 	- 2301
+	Link		- 7195
+	Roads 		- 4033
+	TOTAL		- 14287
+
+Brasilla:
+	Gateway 	- 2140
+	Intersection 	- 6564
+	Link		- 17216
+	Roads		- 11239
+	TOTAL		- 37159
+
+Warszawa:
+	Gateway 	- 3220
+	Intersection 	- 8855
+	Link		- 26407
+	Roads		- 16311
+	TOTAL		- 54793
